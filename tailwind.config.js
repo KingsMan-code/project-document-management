@@ -1,22 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    './app/**/*.{js,ts,jsx,tsx}',
-    './pages/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
+    "./src/app/**/*.{js,ts,jsx,tsx}", // pasta app
+    "./src/pages/**/*.{js,ts,jsx,tsx}", // caso tenha pages
+    "./src/components/**/*.{js,ts,jsx,tsx}", // componentes
   ],
   theme: {
-    extend: {
-      keyframes: {
-        'bounce-slow': {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-      },
-      animation: {
-        'bounce-slow': 'bounce-slow 3s infinite ease-in-out',
-      },
-    },
+    extend: {},
   },
   plugins: [],
-}
+};
