@@ -38,7 +38,7 @@ export default function ChangeWAY() {
     >
       <div className="relative overflow-hidden">
         <img 
-          className="w-full h-64 object-cover transition-all duration-700 group-hover:grayscale-0"
+          className="w-full h-64 object-cover transition-all duration-700 grayscale group-hover:grayscale-0"
           src={card.image} 
           alt={card.title}
         />
@@ -83,6 +83,10 @@ export default function ChangeWAY() {
             <h1 className="text-4xl font-bold text-white mb-4">
               Gerenciamento de Documentos Jurídicos
             </h1>
+            <p className="text-lightGray text-lg max-w-3xl mx-auto">
+              Escolha o serviço adequado para gerenciar seus documentos legais. 
+              Nosso sistema seguro permite upload, acompanhamento e gestão completa da sua documentação jurídica.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 justify-center max-w-4xl mx-auto">
