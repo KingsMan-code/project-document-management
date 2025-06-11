@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes bounce-slow {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes slide-up-fade {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite;
+}
+
+.animate-slide-up-fade {
+  animation: slide-up-fade 1s ease-in-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+/* Swiper customizations */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #ECC440 !important;
+  background: rgba(26, 36, 63, 0.8) !important;
+  border-radius: 50% !important;
+  width: 44px !important;
+  height: 44px !important;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+
+.swiper-pagination-bullet {
+  background: #7A7A7A !important;
+  opacity: 0.5 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #ECC440 !important;
+  opacity: 1 !important;
+}
+
+/* Custom shadow classes */
+.shadow-3xl {
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.3);
+}
+
+/* Grayscale filter utilities */
+.filter {
+  filter: grayscale(100%);
+}
+
+.filter-none {
+  filter: none;
+}
+
+.grayscale {
+  filter: grayscale(100%);
+}
+
+.hover\:filter-none:hover {
+  filter: none;
+}
