@@ -28,7 +28,7 @@ export default function ChangeWAY() {
   }
 
   // CardComponent com tamanho igual para ambos e botão sempre amarelo
-  const CardComponent = ({ card }: { card: any }) => (
+  const CardComponent = ({ card, router }: { card: any, router: any }) => (
     <div 
       className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-3xl cursor-pointer group"
       style={{
@@ -42,7 +42,6 @@ export default function ChangeWAY() {
           src={card.image} 
           alt={card.title}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-300"></div>
       </div>
       
       <div className="flex flex-col flex-1 p-6">
@@ -65,6 +64,12 @@ export default function ChangeWAY() {
         </div>
         
         <button 
+          onClick={() => {
+            if (card.id === 9) {
+              router.push('/novo-cliente')
+            }
+            // Adicione outras rotas aqui conforme necessário para outros cards
+          }}
           className="w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg transform hover:scale-105 bg-yellow hover:bg-darkYellow text-primary hover:shadow-xl mt-auto"
         >
           {card.buttonText}
@@ -96,7 +101,8 @@ export default function ChangeWAY() {
                 Para Clientes Existentes
               </h2>
               <CardComponent 
-                card={existingClientCard} 
+                card={existingClientCard}
+                router={router}
               />
             </div>
 
@@ -106,7 +112,8 @@ export default function ChangeWAY() {
                 Para Novos Clientes
               </h2>
               <CardComponent 
-                card={newClientCard} 
+                card={newClientCard}
+                router={router}
               />
             </div>
           </div>
@@ -126,4 +133,3 @@ export default function ChangeWAY() {
     </div>
   )
 }
-
