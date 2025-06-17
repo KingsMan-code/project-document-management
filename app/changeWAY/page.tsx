@@ -77,7 +77,7 @@ export default function ChangeWAY() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => {
-          if (card.id === 2) router.push('/novo-cliente');
+          if (card.id === 2) router.push('/cliente');
         }}
         className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.9] hover:scale-100 hover:shadow-2xl cursor-pointer"
         style={{
@@ -125,10 +125,10 @@ export default function ChangeWAY() {
 
           <div className="text-center mt-12">
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.back()}
               className="bg-primary hover:bg-primary/80 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg"
             >
-              Voltar ao Início
+              Voltar
             </button>
           </div>
         </div>

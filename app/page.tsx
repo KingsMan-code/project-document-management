@@ -67,7 +67,7 @@ export default function Inicio() {
     if (startTransition) {
       const fadeOut = setTimeout(() => {
         setShowLayout(true);
-      }, 1200); // espera a animação do h1 terminar
+      }, 1500); // espera a animação do h1 terminar
 
       const redirect = setTimeout(() => {
         router.push('/changeWAY');

@@ -5,10 +5,18 @@ import Header from '../../src/components/Header'
 import Footer from '../../src/components/Footer'
 import { useState } from 'react'
 
-export default function NovoCliente() {
+export default function Cliente() {
   const router = useRouter()
   const [nome, setNome] = useState('')
   const [cpf, setCpf] = useState('')
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // Aqui você pode validar ou salvar os dados antes de redirecionar
+
+    router.push('/envioDocumentos') // redireciona para a nova página
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#1A243F]">
@@ -19,7 +27,7 @@ export default function NovoCliente() {
           <h1 className="text-3xl font-bold text-center mb-6">Novo Cliente</h1>
           <p className="text-center text-[#CA9D14] mb-8">Informe seu nome completo e CPF para prosseguir</p>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="nome" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
                 Nome
