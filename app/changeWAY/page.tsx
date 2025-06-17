@@ -34,7 +34,7 @@ export default function ChangeWAY() {
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.9] hover:scale-[0.95] cursor-pointer"
+        className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.9] hover:scale-[0.95] hover:shadow-2xl cursor-pointer"
         style={{
           background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
           width: '400px',
@@ -57,7 +57,7 @@ export default function ChangeWAY() {
           <p className="text-textColor text-sm leading-snug mb-3 text-center">{card.description}</p>
           <button
             onClick={() => {
-              if (card.id === 9) router.push('/novo-cliente');
+              if (card.id === 2) router.push('/novo-cliente');
             }}
             className="w-full font-semibold py-2 px-3 rounded-md transition-all duration-300 shadow-md transform hover:scale-105 bg-yellow hover:bg-darkYellow text-primary text-sm mt-auto"
           >
@@ -77,13 +77,13 @@ export default function ChangeWAY() {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => {
-          if (card.id === 9) router.push('/novo-cliente');
+          if (card.id === 2) router.push('/novo-cliente');
         }}
         className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.9] hover:scale-100 hover:shadow-2xl cursor-pointer"
         style={{
           background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
-          width: '400px',
-          height: '400px',
+          width: '300px',
+          height: '300px',
           margin: '0 auto',
         }}
       >
@@ -100,7 +100,6 @@ export default function ChangeWAY() {
         <div className="flex flex-col flex-1 p-4">
           <div className="font-semibold text-lg mb-2 text-primary text-center">{card.title}</div>
           <p className="text-textColor text-sm leading-snug mb-3 text-center">{card.description}</p>
-          {/* Botão removido */}
         </div>
       </div>
     );
@@ -115,12 +114,13 @@ export default function ChangeWAY() {
             <h1 className="text-3xl font-semibold text-white mb-1">Gerenciamento de Documentos Jurídicos</h1>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 justify-center max-w-4xl mx-auto">
-            {/* Card tradicional com botão */}
-            <CardComponent card={existingClientCard} />
-
-            {/* Card link (todo clicável) */}
-            <CardLinkComponent card={newClientCard} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 justify-center max-w-4xl mx-auto items-center">
+            <div className="flex justify-center items-center">
+              <CardComponent card={existingClientCard} />
+            </div>
+            <div className="flex justify-center items-center">
+              <CardLinkComponent card={newClientCard} />
+            </div>
           </div>
 
           <div className="text-center mt-12">
