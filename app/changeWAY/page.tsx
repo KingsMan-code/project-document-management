@@ -1,125 +1,130 @@
-'use client'
+'use client';
 
-import { useRouter } from 'next/navigation'
-import Header from '../../src/components/Header'
-import Footer from '../../src/components/Footer'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Header from '../../src/components/Header';
+import Footer from '../../src/components/Footer';
 
 export default function ChangeWAY() {
-  const router = useRouter()
+  const router = useRouter();
 
-  // Card para clientes existentes - Acompanhamento Processual
   const existingClientCard = {
-    id: 2,
-    title: "Acompanhamento Processual",
-    description: "Acompanhe o andamento dos seus processos em curso. Receba atualizações e envie documentação complementar.",
-    image: "/law-card-2.jpg",
-    tags: ["#processo", "#acompanhamento", "#atualização"],
-    buttonText: "Ver Processo"
-  }
+    id: 1,
+    title: 'Já sou cliente',
+    description: 'Já sou cliente do escritório e quero adicionar os documentos novos solicitados.',
+    image: '/law-card-2.jpg',
+    tags: ['#processo', '#acompanhamento', '#atualização'],
+    buttonText: 'Enviar Documentos',
+  };
 
-  // Card para novos clientes - Análise de Caso
   const newClientCard = {
-    id: 9,
-    title: "Análise de Caso",
-    description: "Receba uma análise detalhada do seu caso. Nossa equipe avaliará a viabilidade e estratégias legais.",
-    image: "/law-card-9.webp",
-    tags: ["#análise", "#caso", "#estratégia"],
-    buttonText: "Solicitar Análise"
-  }
+    id: 2,
+    title: 'Sou novo cliente',
+    description: 'Sou novo cliente do escritório e quero enviar meus documentos para análise de caso.',
+    image: '/law-card-9.webp',
+    tags: ['#análise', '#caso', '#estratégia'],
+    buttonText: 'Enviar Documentos',
+  };
 
-  // CardComponent com tamanho igual para ambos e botão sempre amarelo
-  const CardComponent = ({ card, router }: { card: any, router: any }) => (
-    <div 
-      className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-3xl cursor-pointer group"
-      style={{
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-        background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)'
-      }}
-    >
-      <div className="relative overflow-hidden">
-        <img 
-          className="w-full h-64 object-cover transition-all duration-700 grayscale group-hover:grayscale-0"
-          src={card.image} 
-          alt={card.title}
-        />
-      </div>
-      
-      <div className="flex flex-col flex-1 p-6">
-        <div className="font-bold text-xl mb-3 text-primary">
-          {card.title}
+  // 👉 Versão 1: Card tradicional com botão
+  const CardComponent = ({ card }: { card: any }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.9] hover:scale-[0.95] cursor-pointer"
+        style={{
+          background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+          width: '400px',
+          height: '400px',
+          margin: '0 auto',
+        }}
+      >
+        <div className="relative overflow-hidden">
+          <img
+            className={`w-full h-48 object-cover transition-all duration-700 ${
+              isHovered ? 'grayscale-0' : 'grayscale'
+            }`}
+            src={card.image}
+            alt={card.title}
+          />
         </div>
-        <p className="text-textColor text-base leading-relaxed mb-4 flex-1">
-          {card.description}
-        </p>
-        
-        <div className="flex flex-wrap gap-2 mb-4">
-          {card.tags.map((tag: string, index: number) => (
-            <span 
-              key={index}
-              className="inline-block bg-lightYellow rounded-full px-3 py-1 text-sm font-semibold text-primary shadow-sm"
-            >
-              {tag}
-            </span>
-          ))}
+
+        <div className="flex flex-col flex-1 p-4">
+          <div className="font-semibold text-lg mb-2 text-primary text-center">{card.title}</div>
+          <p className="text-textColor text-sm leading-snug mb-3 text-center">{card.description}</p>
+          <button
+            onClick={() => {
+              if (card.id === 9) router.push('/novo-cliente');
+            }}
+            className="w-full font-semibold py-2 px-3 rounded-md transition-all duration-300 shadow-md transform hover:scale-105 bg-yellow hover:bg-darkYellow text-primary text-sm mt-auto"
+          >
+            {card.buttonText}
+          </button>
         </div>
-        
-        <button 
-          onClick={() => {
-            if (card.id === 9) {
-              router.push('/novo-cliente')
-            }
-            // Adicione outras rotas aqui conforme necessário para outros cards
-          }}
-          className="w-full font-bold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg transform hover:scale-105 bg-yellow hover:bg-darkYellow text-primary hover:shadow-xl mt-auto"
-        >
-          {card.buttonText}
-        </button>
       </div>
-    </div>
-  )
+    );
+  };
+
+  // 👉 Versão 2: CardLink – todo o card é clicável, sem botão
+  const CardLinkComponent = ({ card }: { card: any }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+      <div
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => {
+          if (card.id === 9) router.push('/novo-cliente');
+        }}
+        className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.9] hover:scale-100 hover:shadow-2xl cursor-pointer"
+        style={{
+          background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
+          width: '400px',
+          height: '400px',
+          margin: '0 auto',
+        }}
+      >
+        <div className="relative overflow-hidden">
+          <img
+            className={`w-full h-48 object-cover transition-all duration-700 ${
+              isHovered ? 'grayscale-0' : 'grayscale'
+            }`}
+            src={card.image}
+            alt={card.title}
+          />
+        </div>
+
+        <div className="flex flex-col flex-1 p-4">
+          <div className="font-semibold text-lg mb-2 text-primary text-center">{card.title}</div>
+          <p className="text-textColor text-sm leading-snug mb-3 text-center">{card.description}</p>
+          {/* Botão removido */}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
       <main className="flex-1 px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-white mb-4">
-              Gerenciamento de Documentos Jurídicos
-            </h1>
-            <p className="text-lightGray text-lg max-w-3xl mx-auto">
-              Escolha o serviço adequado para gerenciar seus documentos legais. 
-              Nosso sistema seguro permite upload, acompanhamento e gestão completa da sua documentação jurídica.
-            </p>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <h1 className="text-3xl font-semibold text-white mb-1">Gerenciamento de Documentos Jurídicos</h1>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 justify-center max-w-4xl mx-auto">
-            {/* Card para Clientes Existentes */}
-            <div className="flex flex-col h-full">
-              <h2 className="text-2xl font-bold text-yellow mb-6 text-center">
-                Para Clientes Existentes
-              </h2>
-              <CardComponent 
-                card={existingClientCard}
-                router={router}
-              />
-            </div>
+            {/* Card tradicional com botão */}
+            <CardComponent card={existingClientCard} />
 
-            {/* Card para Novos Clientes */}
-            <div className="flex flex-col h-full">
-              <h2 className="text-2xl font-bold text-yellow mb-6 text-center">
-                Para Novos Clientes
-              </h2>
-              <CardComponent 
-                card={newClientCard}
-                router={router}
-              />
-            </div>
+            {/* Card link (todo clicável) */}
+            <CardLinkComponent card={newClientCard} />
           </div>
-          
+
           <div className="text-center mt-12">
-            <button 
+            <button
               onClick={() => router.push('/')}
               className="bg-primary hover:bg-primary/80 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg"
             >
@@ -128,8 +133,7 @@ export default function ChangeWAY() {
           </div>
         </div>
       </main>
-      
       <Footer />
     </div>
-  )
+  );
 }
