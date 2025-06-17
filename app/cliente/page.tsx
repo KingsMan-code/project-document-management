@@ -4,18 +4,26 @@ import { useRouter } from 'next/navigation'
 import Header from '../../src/components/Header'
 import Footer from '../../src/components/Footer'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { setCliente } from '../../store/clienteSlice'
 
 export default function Cliente() {
   const router = useRouter()
+  const dispatch = useDispatch()
+
   const [nome, setNome] = useState('')
   const [cpf, setCpf] = useState('')
+  const [nomeTouched, setNomeTouched] = useState(false)
+  const [cpfTouched, setCpfTouched] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Aqui você pode validar ou salvar os dados antes de redirecionar
+    // Envia os dados para o Redux
+    dispatch(setCliente({ nome, cpf }))
 
-    router.push('/envioDocumentos') // redireciona para a nova página
+    // Redireciona para a próxima página
+    router.push('/envioDocumentos')
   }
 
   return (
@@ -31,28 +39,36 @@ export default function Cliente() {
             <div>
               <label htmlFor="nome" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
                 Nome
+                {!nome && !nomeTouched && (
+                  <span className="text-red-600 ml-1">*</span>
+                )}
               </label>
               <input
                 type="text"
                 id="nome"
                 placeholder="Seu nome completo"
                 value={nome}
-                onChange={(e) => setNome(e.target.value)}
+                onChange={e => { setNome(e.target.value); setNomeTouched(true); }}
                 className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
+                required
               />
             </div>
 
             <div>
               <label htmlFor="cpf" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
                 CPF
+                {!cpf && !cpfTouched && (
+                  <span className="text-red-600 ml-1">*</span>
+                )}
               </label>
               <input
                 type="text"
                 id="cpf"
                 placeholder="000.000.000-00"
                 value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
+                onChange={e => { setCpf(e.target.value); setCpfTouched(true); }}
                 className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
+                required
               />
             </div>
 
@@ -66,10 +82,10 @@ export default function Cliente() {
 
           <div className="text-center mt-6">
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.back()}
               className="text-sm text-[#CA9D14] hover:underline"
             >
-              Voltar ao Início
+              Voltar
             </button>
           </div>
         </div>

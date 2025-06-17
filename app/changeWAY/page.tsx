@@ -13,7 +13,6 @@ export default function ChangeWAY() {
     title: 'Já sou cliente',
     description: 'Já sou cliente do escritório e quero adicionar os documentos novos solicitados.',
     image: '/law-card-2.jpg',
-    tags: ['#processo', '#acompanhamento', '#atualização'],
     buttonText: 'Enviar Documentos',
   };
 
@@ -22,7 +21,6 @@ export default function ChangeWAY() {
     title: 'Sou novo cliente',
     description: 'Sou novo cliente do escritório e quero enviar meus documentos para análise de caso.',
     image: '/law-card-9.webp',
-    tags: ['#análise', '#caso', '#estratégia'],
     buttonText: 'Enviar Documentos',
   };
 
