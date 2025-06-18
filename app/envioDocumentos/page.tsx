@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 export default function EnvioDocumentos() {
   const router = useRouter();
   const { nome, cpf } = useAppSelector((state) => state.cliente);
-  const [nomeArquivo, setNomeArquivo] = useState("");
   const [arquivos, setArquivos] = useState<File[]>([]);
   const [nomesAtribuidos, setNomesAtribuidos] = useState<string[]>([]);
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
@@ -23,9 +22,8 @@ export default function EnvioDocumentos() {
       setArquivos((prev) => [...prev, ...novosArquivos]);
       setNomesAtribuidos((prev) => [
         ...prev,
-        ...novosArquivos.map((file) => nomeArquivo.trim() ? nomeArquivo : file.name),
+        ...novosArquivos.map((file) => file.name),
       ]);
-      setNomeArquivo(""); // Limpa o campo do nome após adicionar arquivos
     }
   };
 
@@ -74,24 +72,10 @@ export default function EnvioDocumentos() {
         <div className="bg-white text-[#1A243F] rounded-2xl shadow-lg p-10 max-w-xl w-full relative border-l-8 border-[#ECC440]">
           <h1 className="text-3xl font-bold text-center mb-6">Envio de Documentos</h1>
           <p className="text-center text-[#CA9D14] mb-8">
-            Preencha o nome do arquivo e selecione os documentos para enviar.
+            Selecione os documentos para enviar.
           </p>
 
           <form className="space-y-6" onSubmit={handleSubmitFinal}>
-            <div>
-              <label htmlFor="nomeArquivo" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
-                Nome do Arquivo
-              </label>
-              <input
-                type="text"
-                id="nomeArquivo"
-                placeholder="Ex: RG, Contrato..."
-                value={nomeArquivo}
-                onChange={(e) => setNomeArquivo(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-300"
-              />
-            </div>
-
             <div>
               <label htmlFor="arquivo" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
                 Selecionar Arquivos

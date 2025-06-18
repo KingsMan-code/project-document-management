@@ -7,22 +7,51 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { setCliente } from '../../store/clienteSlice'
 
+function formatCpfCnpj(value: string) {
+  // Remove tudo que não for número
+  const digits = value.replace(/\D/g, '');
+
+  if (digits.length <= 11) {
+    // CPF: 000.000.000-00
+    return digits
+      .replace(/^(\d{3})(\d)/, '$1.$2')
+      .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1-$2')
+      .slice(0, 14);
+  } else {
+    // CNPJ: 00.000.000/0000-00
+    return digits
+      .replace(/^(\d{2})(\d)/, '$1.$2')
+      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .slice(0, 18);
+  }
+}
+
 export default function Cliente() {
   const router = useRouter()
   const dispatch = useDispatch()
 
   const [nome, setNome] = useState('')
   const [cpf, setCpf] = useState('')
+  const [cpfRaw, setCpfRaw] = useState('')
   const [nomeTouched, setNomeTouched] = useState(false)
   const [cpfTouched, setCpfTouched] = useState(false)
 
+  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Remove tudo que não for número para enviar ao redux depois
+    const onlyDigits = value.replace(/\D/g, '');
+    setCpfRaw(onlyDigits);
+    setCpf(formatCpfCnpj(value));
+    setCpfTouched(true);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-
-    // Envia os dados para o Redux
-    dispatch(setCliente({ nome, cpf }))
-
-    // Redireciona para a próxima página
+    // Envia apenas os dígitos para o Redux
+    dispatch(setCliente({ nome, cpf: cpfRaw }))
     router.push('/envioDocumentos')
   }
 
@@ -56,7 +85,7 @@ export default function Cliente() {
 
             <div>
               <label htmlFor="cpf" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
-                CPF
+                CPF ou CNPJ
                 {!cpf && !cpfTouched && (
                   <span className="text-red-600 ml-1">*</span>
                 )}
@@ -64,9 +93,10 @@ export default function Cliente() {
               <input
                 type="text"
                 id="cpf"
-                placeholder="000.000.000-00"
+                placeholder="Digite seu CPF ou CNPJ"
                 value={cpf}
-                onChange={e => { setCpf(e.target.value); setCpfTouched(true); }}
+                onChange={handleCpfChange}
+                maxLength={18}
                 className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
                 required
               />
