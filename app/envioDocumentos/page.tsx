@@ -11,30 +11,34 @@ export default function EnvioDocumentos() {
   const { nome, cpf } = useAppSelector((state) => state.cliente);
   const [nomeArquivo, setNomeArquivo] = useState("");
   const [arquivos, setArquivos] = useState<File[]>([]);
-  const [nomeTouched, setNomeTouched] = useState(false);
-  const [arquivoTouched, setArquivoTouched] = useState(false);
+  const [nomesAtribuidos, setNomesAtribuidos] = useState<string[]>([]);
+  const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
+  const [novoNome, setNovoNome] = useState("");
+  const [confirmandoExclusaoIndex, setConfirmandoExclusaoIndex] = useState<number | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setArquivoTouched(true);
     const files = e.target.files;
     if (files) {
-      setArquivos((prev) => [...prev, ...Array.from(files)]);
+      const novosArquivos = Array.from(files);
+      setArquivos((prev) => [...prev, ...novosArquivos]);
+      setNomesAtribuidos((prev) => [
+        ...prev,
+        ...novosArquivos.map((file) => nomeArquivo.trim() ? nomeArquivo : file.name),
+      ]);
+      setNomeArquivo(""); // Limpa o campo do nome após adicionar arquivos
     }
-  };
-
-  const handleNomeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNomeTouched(true);
-    setNomeArquivo(e.target.value);
   };
 
   const handleRemoveFile = (index: number) => {
     setArquivos((prev) => prev.filter((_, idx) => idx !== index));
+    setNomesAtribuidos((prev) => prev.filter((_, idx) => idx !== index));
+    setConfirmandoExclusaoIndex(null);
   };
 
   const handleSubmitFinal = (e: React.FormEvent) => {
     e.preventDefault();
-    const documentos = arquivos.map((file) => ({
-      nomeArquivo,
+    const documentos = arquivos.map((file, idx) => ({
+      nomeArquivo: nomesAtribuidos[idx],
       arquivo: file.name,
     }));
 
@@ -45,12 +49,21 @@ export default function EnvioDocumentos() {
     };
 
     console.log("Payload pronto para API:", payload);
+  };
 
-    // Reset
-    setNomeArquivo("");
-    setArquivos([]);
-    setNomeTouched(false);
-    setArquivoTouched(false);
+  const abrirEdicao = (idx: number) => {
+    setEditandoIndex(idx);
+    setNovoNome(nomesAtribuidos[idx]);
+  };
+
+  const salvarEdicao = () => {
+    if (editandoIndex !== null) {
+      const atualizados = [...nomesAtribuidos];
+      atualizados[editandoIndex] = novoNome;
+      setNomesAtribuidos(atualizados);
+      setEditandoIndex(null);
+      setNovoNome("");
+    }
   };
 
   return (
@@ -58,10 +71,8 @@ export default function EnvioDocumentos() {
       <Header />
 
       <main className="flex-1 px-4 py-8 flex items-center justify-center">
-        <div className="bg-white text-[#1A243F] rounded-2xl shadow-lg p-10 max-w-xl w-full relative border-l-8 border-[#ECC440] transition-transform transform hover:scale-[1.01] hover:shadow-[0_0_20px_#ECC44050]">
-          <h1 className="text-3xl font-bold text-center mb-6">
-            Envio de Documentos
-          </h1>
+        <div className="bg-white text-[#1A243F] rounded-2xl shadow-lg p-10 max-w-xl w-full relative border-l-8 border-[#ECC440]">
+          <h1 className="text-3xl font-bold text-center mb-6">Envio de Documentos</h1>
           <p className="text-center text-[#CA9D14] mb-8">
             Preencha o nome do arquivo e selecione os documentos para enviar.
           </p>
@@ -70,42 +81,35 @@ export default function EnvioDocumentos() {
             <div>
               <label htmlFor="nomeArquivo" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
                 Nome do Arquivo
-                {!nomeArquivo && !nomeTouched && (
-                  <span className="text-red-600 ml-1">*</span>
-                )}
               </label>
               <input
                 type="text"
                 id="nomeArquivo"
-                placeholder="Ex: RG, Contrato, Procuração..."
+                placeholder="Ex: RG, Contrato..."
                 value={nomeArquivo}
-                onChange={handleNomeChange}
-                className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
-                required
+                onChange={(e) => setNomeArquivo(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-300"
               />
             </div>
 
             <div>
               <label htmlFor="arquivo" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
                 Selecionar Arquivos
-                {arquivos.length === 0 && !arquivoTouched && (
-                  <span className="text-red-600 ml-1">*</span>
-                )}
               </label>
               <input
                 type="file"
                 id="arquivo"
                 multiple
                 onChange={handleFileChange}
-                className="w-full px-4 py-2 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
+                className="w-full px-4 py-2 rounded-lg bg-gray-100 border border-gray-300"
                 required
               />
             </div>
 
             {arquivos.length > 0 && (
-              <table className="mt-4 w-full text-left text-sm">
-                <thead>
-                  <tr className="text-[#CA9D14]">
+              <table className="mt-4 w-full text-sm text-left">
+                <thead className="text-[#CA9D14]">
+                  <tr>
                     <th className="py-2">Nome Atribuído</th>
                     <th className="py-2 text-center">Editar</th>
                     <th className="py-2 text-center">Excluir</th>
@@ -113,14 +117,13 @@ export default function EnvioDocumentos() {
                 </thead>
                 <tbody>
                   {arquivos.map((file, idx) => (
-                    <tr key={idx} className="border-t border-gray-300">
-                      <td className="py-2">{nomeArquivo}</td>
+                    <tr key={idx} className="border-t">
+                      <td className="py-2">{nomesAtribuidos[idx]}</td>
                       <td className="text-center">
                         <button
                           type="button"
-                          title="Editar"
+                          onClick={() => abrirEdicao(idx)}
                           className="text-blue-600 hover:text-blue-800"
-                          onClick={() => alert("Função de editar nome em desenvolvimento")}
                         >
                           ✎
                         </button>
@@ -128,8 +131,7 @@ export default function EnvioDocumentos() {
                       <td className="text-center">
                         <button
                           type="button"
-                          title="Excluir"
-                          onClick={() => handleRemoveFile(idx)}
+                          onClick={() => setConfirmandoExclusaoIndex(idx)}
                           className="text-red-600 hover:text-red-800"
                         >
                           🗑️
@@ -143,7 +145,7 @@ export default function EnvioDocumentos() {
 
             <button
               type="submit"
-              className="w-full bg-yellow text-[#1A243F] font-bold py-3 px-6 rounded-lg transition-all duration-200 hover:bg-[#DDAC17] shadow-lg"
+              className="w-full bg-yellow text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-[#DDAC17]"
             >
               Enviar Documentos
             </button>
@@ -161,6 +163,57 @@ export default function EnvioDocumentos() {
       </main>
 
       <Footer />
+
+      {editandoIndex !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-bold mb-4 text-[#1A243F]">Editar Nome do Arquivo</h2>
+            <input
+              type="text"
+              value={novoNome}
+              onChange={(e) => setNovoNome(e.target.value)}
+              className="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setEditandoIndex(null)}
+                className="px-4 py-2 text-sm rounded-md bg-gray-200 hover:bg-gray-300"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={salvarEdicao}
+                className="px-4 py-2 text-sm rounded-md bg-yellow text-[#1A243F] hover:bg-[#DDAC17]"
+              >
+                Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmandoExclusaoIndex !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-lg font-bold mb-4 text-[#1A243F]">Confirmar Exclusão</h2>
+            <p className="mb-6 text-gray-700">Deseja realmente excluir o arquivo "{nomesAtribuidos[confirmandoExclusaoIndex]}"?</p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmandoExclusaoIndex(null)}
+                className="px-4 py-2 text-sm rounded-md bg-gray-200 hover:bg-gray-300"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => handleRemoveFile(confirmandoExclusaoIndex)}
+                className="px-4 py-2 text-sm rounded-md bg-yellow text-[#1A243F] hover:bg-[#DDAC17]"
+              >
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
