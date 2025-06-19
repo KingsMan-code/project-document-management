@@ -61,7 +61,7 @@ export default function Cliente() {
 
       <main className="flex-1 px-4 py-8 flex items-center justify-center">
         <div className="bg-white text-[#1A243F] rounded-2xl shadow-lg p-10 max-w-xl w-full relative border-l-8 border-[#ECC440] transition-transform transform hover:scale-[1.01] hover:shadow-[0_0_20px_#ECC44050]">
-          <h1 className="text-3xl font-bold text-center mb-6">Novo Cliente</h1>
+          <h1 className="text-3xl font-bold text-center mb-6">Bem-vindo</h1>
           <p className="text-center text-[#CA9D14] mb-8">Informe seu nome completo e CPF para prosseguir</p>
 
           <form className="space-y-6" onSubmit={handleSubmit}>

@@ -9,13 +9,17 @@ interface Documento {
 interface ClienteState {
   nome: string;
   cpf: string;
+  dataNascimento: string;
   documentos: Documento[];
+  problema: string;
 }
 
 const initialState: ClienteState = {
   nome: '',
   cpf: '',
+  dataNascimento: '',
   documentos: [],
+  problema: '',
 };
 
 export const clienteSlice = createSlice({
@@ -26,12 +30,18 @@ export const clienteSlice = createSlice({
       state.nome = action.payload.nome;
       state.cpf = action.payload.cpf;
     },
+    setDataNascimento: (state, action: PayloadAction<string>) => {
+      state.dataNascimento = action.payload;
+    },
     adicionarDocumento: (state, action: PayloadAction<Documento>) => {
       state.documentos.push(action.payload);
+    },
+    setProblema: (state, action: PayloadAction<string>) => {
+      state.problema = action.payload;
     },
     limparCliente: () => initialState,
   },
 });
 
-export const { setCliente, adicionarDocumento, limparCliente } = clienteSlice.actions;
+export const { setCliente, setDataNascimento, adicionarDocumento, setProblema, limparCliente } = clienteSlice.actions;
 export default clienteSlice.reducer;
