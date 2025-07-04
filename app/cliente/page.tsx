@@ -1,13 +1,14 @@
-// app/cliente/page.tsx - VERSÃO CORRIGIDA
-'use client'
+// app/cliente/page.tsx - VERSÃO CORRIGIDA COMPLETA
+"use client";
 
-import { useRouter } from 'next/navigation'
-import Header from '../../src/components/Header'
-import Footer from '../../src/components/Footer'
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { setTipoCliente, setDadosPF, setDadosPJ, adicionarDocumento } from '../../store/clienteSlice'
-import { formatCpfCnpj, isValidCPF, isValidCNPJ, isValidDate } from '../../src/utils/validation'
+import { useRouter } from "next/navigation";
+import Header from "../../src/components/Header";
+import Footer from "../../src/components/Footer";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setDadosPF } from "../../store/clienteSlice";
+import { formatCpfCnpj, isValidCPF } from "../../src/utils/validation";
+import { PDFDocument } from "pdf-lib";
 
 interface DocumentoLocal {
   file: File;
@@ -15,55 +16,41 @@ interface DocumentoLocal {
 }
 
 export default function Cliente() {
-  const router = useRouter()
-  const dispatch = useDispatch()
+  const router = useRouter();
+  const dispatch = useDispatch();
 
   // Controle de seções
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(2);
 
   // Estados do formulário
-  const [tipoCliente, setTipoClienteLocal] = useState<'pf' | 'pj' | null>(null)
-  const [nome, setNome] = useState('')
-  const [cpfCnpj, setCpfCnpj] = useState('')
-  const [cpfCnpjRaw, setCpfCnpjRaw] = useState('')
-  const [dataNascimentoCriacao, setDataNascimentoCriacao] = useState('')
-  const [documentosLocais, setDocumentosLocais] = useState<DocumentoLocal[]>([])
+  const [nome, setNome] = useState("");
+  const [cpfCnpj, setCpfCnpj] = useState("");
+  const [cpfCnpjRaw, setCpfCnpjRaw] = useState("");
+  const [documentosLocais, setDocumentosLocais] = useState<DocumentoLocal[]>(
+    []
+  );
 
   // Estados para edição de documentos
-  const [editandoIndex, setEditandoIndex] = useState<number | null>(null)
-  const [novoNomeDocumento, setNovoNomeDocumento] = useState("")
+  const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
+  const [novoNomeDocumento, setNovoNomeDocumento] = useState("");
+
+  // Controle de interação com campos
+  const [nomeTouched, setNomeTouched] = useState(false);
+  const [cpfTouched, setCpfTouched] = useState(false);
 
   const handleCpfCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    const onlyDigits = value.replace(/\D/g, '');
+    const onlyDigits = value.replace(/\D/g, "");
     setCpfCnpjRaw(onlyDigits);
     setCpfCnpj(formatCpfCnpj(value));
   };
 
   const isValidDocument = () => {
-    if (tipoCliente === 'pf') {
-      return isValidCPF(cpfCnpjRaw);
-    } else if (tipoCliente === 'pj') {
-      return isValidCNPJ(cpfCnpjRaw);
-    }
-    return false;
+    return isValidCPF(cpfCnpjRaw);
   };
 
-  const handleTipoClienteChange = (tipo: 'pf' | 'pj') => {
-    setTipoClienteLocal(tipo);
-    dispatch(setTipoCliente(tipo));
-    setCurrentStep(2);
-  };
-
-  const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const novosArquivos = Array.from(e.target.files);
-      const novosDocumentosLocais: DocumentoLocal[] = novosArquivos.map(file => ({
-        file,
-        nomeAtribuido: file.name,
-      }));
-      setDocumentosLocais((prev) => [...prev, ...novosDocumentosLocais]);
-    }
+  const canAdvanceFromStep2 = () => {
+    return nome.trim().split(" ").length >= 2 && isValidDocument();
   };
 
   const handleRemoveFile = (index: number) => {
@@ -86,142 +73,163 @@ export default function Cliente() {
   };
 
   const handleFinalSubmit = () => {
-    // Salva os dados no Redux
-    if (tipoCliente === 'pf') {
-      dispatch(setDadosPF({ 
-        nome, 
-        cpf: cpfCnpjRaw, 
-        dataNascimento: dataNascimentoCriacao 
-      }));
-    } else {
-      dispatch(setDadosPJ({ 
-        nomeEmpresa: nome, 
-        cnpj: cpfCnpjRaw, 
-        dataCriacaoEmpresa: dataNascimentoCriacao 
-      }));
-    }
+    const clienteComDocumentos = {
+      nome: nome,
+      cpf: cpfCnpjRaw,
+      documentos: documentosLocais.map((doc) => ({
+        nome: doc.nomeAtribuido,
+        file: doc.file,
+      })),
+    };
 
-    // Salva os documentos
-    documentosLocais.forEach(doc => {
-      dispatch(adicionarDocumento({ nome: doc.nomeAtribuido, arquivos: [doc.file] }));
-    });
+    dispatch(
+      setDadosPF({
+        nome,
+        cpf: cpfCnpjRaw,
+      })
+    );
 
+    console.log("Cliente com documentos:", clienteComDocumentos);
     setCurrentStep(4);
   };
 
-  const canAdvanceFromStep2 = () => {
-    return nome.trim() && isValidDocument();
+  const handleDocumentUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!e.target.files) return;
+    const novosArquivos = Array.from(e.target.files);
+    const novosDocumentosLocais: DocumentoLocal[] = [];
+
+    for (const file of novosArquivos) {
+      const tipo = file.type;
+
+      if (tipo.startsWith("image/")) {
+        try {
+          const pdfDoc = await PDFDocument.create();
+          const imageBytes = await file.arrayBuffer();
+
+          let embeddedImage;
+          if (tipo === "image/jpeg" || tipo === "image/jpg") {
+            embeddedImage = await pdfDoc.embedJpg(imageBytes);
+          } else if (tipo === "image/png") {
+            embeddedImage = await pdfDoc.embedPng(imageBytes);
+          } else {
+            alert(`Formato de imagem não suportado: ${tipo}`);
+            continue;
+          }
+
+          const page = pdfDoc.addPage([
+            embeddedImage.width,
+            embeddedImage.height,
+          ]);
+          page.drawImage(embeddedImage, {
+            x: 0,
+            y: 0,
+            width: embeddedImage.width,
+            height: embeddedImage.height,
+          });
+
+          const pdfBytes = await pdfDoc.save();
+          const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+          const newFile = new File(
+            [pdfBlob],
+            file.name.replace(/\.[^.]+$/, ".pdf"),
+            {
+              type: "application/pdf",
+            }
+          );
+
+          novosDocumentosLocais.push({
+            file: newFile,
+            nomeAtribuido: newFile.name,
+          });
+        } catch (err) {
+          console.error("Erro ao converter imagem em PDF:", err);
+        }
+      } else if (tipo === "application/pdf") {
+        novosDocumentosLocais.push({
+          file,
+          nomeAtribuido: file.name,
+        });
+      } else {
+        alert(`Tipo de arquivo não suportado: ${tipo}`);
+      }
+    }
+
+    setDocumentosLocais((prev) => [...prev, ...novosDocumentosLocais]);
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#1A243F]">
       <Header />
-      
       <main className="flex-1 px-4 py-8 flex items-center justify-center">
         <div className="bg-white text-[#1A243F] rounded-2xl shadow-lg p-10 max-w-xl w-full relative border-l-8 border-[#ECC440]">
-          
-          {/* SEÇÃO 1: Escolher entre Empresa ou Não */}
-          {currentStep === 1 && (
-            <>
-              <h1 className="text-3xl font-bold text-center mb-6">Bem-vindo!</h1>
-              <p className="text-center text-[#CA9D14] mb-8">
-                Você é cliente pessoa física ou cliente empresa?
-              </p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center">
-                <button
-                  onClick={() => handleTipoClienteChange('pf')}
-                  className="flex-1 bg-white border-2 border-[#ECC440] rounded-xl shadow-md p-6 flex flex-col items-center hover:bg-[#FFF8E1] transition-all"
-                >
-                  <span className="text-3xl mb-2">👤</span>
-                  <span className="font-bold text-lg text-[#1A243F]">
-                    Pessoa Física
-                  </span>
-                </button>
-                <button
-                  onClick={() => handleTipoClienteChange('pj')}
-                  className="flex-1 bg-white border-2 border-[#ECC440] rounded-xl shadow-md p-6 flex flex-col items-center hover:bg-[#FFF8E1] transition-all"
-                >
-                  <span className="text-3xl mb-2">🏢</span>
-                  <span className="font-bold text-lg text-[#1A243F]">
-                    Empresa
-                  </span>
-                </button>
-              </div>
-            </>
-          )}
-
-          {/* SEÇÃO 2: Nome, Data e CPF/CNPJ */}
+          {/* SEÇÃO 2 */}
           {currentStep === 2 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">
-                {tipoCliente === 'pf' ? 'Dados Pessoais' : 'Dados da Empresa'}
+                Dados Pessoais
               </h1>
               <p className="text-center text-[#CA9D14] mb-8">
                 Informe seus dados para prosseguir
               </p>
-
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="nome" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
-                    {tipoCliente === 'pf' ? 'Nome Completo' : 'Nome da Empresa'}
+                  <label
+                    htmlFor="nome"
+                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                  >
+                    Nome Completo
                   </label>
                   <input
                     type="text"
                     id="nome"
-                    placeholder={tipoCliente === 'pf' ? "Seu nome completo" : "Nome da empresa"}
+                    placeholder="Digite seu nome completo"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
+                    onBlur={() => setNomeTouched(true)}
                     className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
-                    required
                   />
-                </div>
-
-                <div>
-                  <label htmlFor="cpfCnpj" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
-                    {tipoCliente === 'pf' ? 'CPF' : 'CNPJ'}
-                  </label>
-                  <input
-                    type="text"
-                    id="cpfCnpj"
-                    placeholder={tipoCliente === 'pf' ? "Digite seu CPF" : "Digite o CNPJ"}
-                    value={cpfCnpj}
-                    onChange={handleCpfCnpjChange}
-                    maxLength={tipoCliente === 'pf' ? 14 : 18}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
-                    required
-                  />
-                  {!isValidDocument() && cpfCnpjRaw && (
+                  {nomeTouched && nome.trim().split(" ").length < 2 && (
                     <p className="text-red-600 text-sm mt-1">
-                      {tipoCliente === 'pf' ? 'CPF inválido' : 'CNPJ inválido'}
+                      Digite seu nome completo
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <label htmlFor="data" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
-                    {tipoCliente === 'pf' ? 'Data de Nascimento' : 'Data de Criação da Empresa'}
+                  <label
+                    htmlFor="cpfCnpj"
+                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                  >
+                    CPF
                   </label>
                   <input
-                    type="date"
-                    id="data"
-                    value={dataNascimentoCriacao}
-                    onChange={(e) => setDataNascimentoCriacao(e.target.value)}
+                    type="text"
+                    id="cpfCnpj"
+                    placeholder="Digite o CPF"
+                    value={cpfCnpj}
+                    onChange={handleCpfCnpjChange}
+                    onBlur={() => setCpfTouched(true)}
+                    maxLength={14}
                     className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
                   />
+                  {cpfTouched && !isValidDocument() && (
+                    <p className="text-red-600 text-sm mt-1">CPF inválido</p>
+                  )}
                 </div>
               </div>
-
-              <div className="flex gap-2 mt-6">
-                <button
-                  onClick={() => setCurrentStep(1)}
-                  className="w-1/2 bg-gray-200 text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-all"
-                >
-                  Anterior
-                </button>
+              <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setCurrentStep(3)}
-                  disabled={!canAdvanceFromStep2()}
-                  className="w-1/2 bg-yellow text-[#1A243F] font-bold py-3 px-6 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+                  disabled={
+                    !(nomeTouched && nome.trim().split(" ").length >= 2 && cpfTouched && isValidDocument())
+                  }
+                  className={`w-1/2 font-bold py-3 px-6 rounded-lg transition-all ${
+                    !(nomeTouched && nome.trim().split(" ").length >= 2 && cpfTouched && isValidDocument())
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-yellow text-[#1A243F] hover:bg-[#D4B91A]"
+                  }`}
                 >
                   Próximo
                 </button>
@@ -229,14 +237,15 @@ export default function Cliente() {
             </>
           )}
 
-          {/* SEÇÃO 3: Escolher Arquivo */}
+          {/* SEÇÃO 3 */}
           {currentStep === 3 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6">Documentos</h1>
+              <h1 className="text-3xl font-bold text-center mb-6">
+                Documentos
+              </h1>
               <p className="text-center text-[#CA9D14] mb-8">
                 Envie seus documentos (opcional)
               </p>
-
               <div className="space-y-6">
                 <input
                   type="file"
@@ -245,18 +254,22 @@ export default function Cliente() {
                   onChange={handleDocumentUpload}
                   className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440]"
                 />
-                
                 {documentosLocais.length > 0 && (
                   <div>
                     <h4 className="font-bold mb-2">Documentos adicionados:</h4>
                     {documentosLocais.map((doc, idx) => (
-                      <div key={idx} className="flex justify-between items-center p-2 bg-gray-50 rounded mb-2">
+                      <div
+                        key={idx}
+                        className="flex justify-between items-center p-2 bg-gray-50 rounded mb-2"
+                      >
                         {editandoIndex === idx ? (
                           <div className="flex-1 flex gap-2">
                             <input
                               type="text"
                               value={novoNomeDocumento}
-                              onChange={(e) => setNovoNomeDocumento(e.target.value)}
+                              onChange={(e) =>
+                                setNovoNomeDocumento(e.target.value)
+                              }
                               className="flex-1 px-2 py-1 border rounded"
                             />
                             <button
@@ -282,6 +295,13 @@ export default function Cliente() {
                               >
                                 ✎
                               </button>
+                              <a
+                                href={URL.createObjectURL(doc.file)}
+                                download={doc.nomeAtribuido}
+                                className="text-green-600 hover:text-green-800"
+                              >
+                                ⬇️
+                              </a>
                               <button
                                 onClick={() => handleRemoveFile(idx)}
                                 className="text-red-600 hover:text-red-800"
@@ -296,7 +316,6 @@ export default function Cliente() {
                   </div>
                 )}
               </div>
-
               <div className="flex gap-2 mt-6">
                 <button
                   onClick={() => setCurrentStep(2)}
@@ -306,7 +325,12 @@ export default function Cliente() {
                 </button>
                 <button
                   onClick={handleFinalSubmit}
-                  className="w-1/2 bg-yellow text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-[#D4B91A] transition-all"
+                  disabled={documentosLocais.length === 0}
+                  className={`w-1/2 font-bold py-3 px-6 rounded-lg transition-all ${
+                    documentosLocais.length === 0
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-yellow text-[#1A243F] hover:bg-[#D4B91A]"
+                  }`}
                 >
                   Próximo
                 </button>
@@ -314,34 +338,30 @@ export default function Cliente() {
             </>
           )}
 
-          {/* SEÇÃO 4: Agradecimento */}
+          {/* SEÇÃO 4 */}
           {currentStep === 4 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Obrigado!</h1>
               <p className="text-center text-[#CA9D14] mb-8">
                 Seus dados foram registrados com sucesso.
               </p>
-
               <div className="bg-gray-50 p-4 rounded-lg mb-6">
                 <h4 className="font-bold mb-2">Resumo dos dados:</h4>
-                <p><strong>{tipoCliente === 'pf' ? 'Nome:' : 'Empresa:'}</strong> {nome}</p>
-                <p><strong>{tipoCliente === 'pf' ? 'CPF:' : 'CNPJ:'}</strong> {cpfCnpj}</p>
-                {dataNascimentoCriacao && (
-                  <p><strong>{tipoCliente === 'pf' ? 'Data de Nascimento:' : 'Data de Criação:'}:</strong> {dataNascimentoCriacao}</p>
-                )}
-                <p><strong>Documentos:</strong> {documentosLocais.length} arquivo(s)</p>
+                <p>
+                  <strong>Nome:</strong> {nome}
+                </p>
+                <p>
+                  <strong>CPF:</strong> {cpfCnpj}
+                </p>
+                <p>
+                  <strong>Documentos:</strong> {documentosLocais.length}{" "}
+                  arquivo(s)
+                </p>
               </div>
-
-              <div className="flex gap-2">
+              <div className="flex justify-center">
                 <button
-                  onClick={() => router.push('/envioDocumentos')}
-                  className="w-1/2 bg-yellow text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-[#D4B91A] transition-all"
-                >
-                  Continuar
-                </button>
-                <button
-                  onClick={() => router.push('/')}
-                  className="w-1/2 bg-gray-200 text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-all"
+                  onClick={() => router.push("/")}
+                  className="w-1/2 bg-yellow text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-all"
                 >
                   Voltar ao Início
                 </button>
@@ -349,26 +369,24 @@ export default function Cliente() {
             </>
           )}
 
-          {/* Indicador de progresso - CORRIGIDO */}
-          {currentStep > 1 && currentStep < 4 && (
+          {/* Indicador de progresso com apenas 2 etapas */}
+          {(currentStep === 2 || currentStep === 3) && (
             <div className="mt-6 pt-4 border-t border-gray-200">
               <div className="flex justify-between text-xs text-gray-500 mb-2">
                 <span>Progresso</span>
-                <span>{currentStep - 1}/3</span>
+                <span>{currentStep === 2 ? "1/2" : "2/2"}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
+                  style={{ width: `${currentStep === 2 ? 50 : 100}%` }}
                 ></div>
               </div>
             </div>
           )}
         </div>
       </main>
-      
       <Footer />
     </div>
-  )
+  );
 }
-
