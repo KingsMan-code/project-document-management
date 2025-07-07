@@ -116,7 +116,7 @@ export default function Cliente() {
           } else if (tipo === "image/png") {
             embeddedImage = await pdfDoc.embedPng(imageBytes);
           } else {
-            alert(`Formato de imagem não suportado: ${tipo}`);
+            // Não mostra o alerta para formatos de imagem não suportados
             continue;
           }
 
@@ -155,11 +155,17 @@ export default function Cliente() {
         });
       } else {
         encontrouTipoInvalido = true;
-        continue;
+        // Se o último arquivo for inválido, mostra o alerta
+        // Se houver arquivos válidos depois, o alerta será removido abaixo
       }
     }
 
-    if (encontrouTipoInvalido) {
+    // Se o último arquivo enviado for válido, some o alerta
+    const ultimoArquivo = novosArquivos[novosArquivos.length - 1];
+    const ultimoTipo = ultimoArquivo?.type || "";
+    if (ultimoTipo.startsWith("image/") || ultimoTipo === "application/pdf") {
+      setFileTypeError(false);
+    } else if (encontrouTipoInvalido) {
       setFileTypeError(true);
     }
 
@@ -193,7 +199,11 @@ export default function Cliente() {
                     id="nome"
                     placeholder="Digite seu nome completo"
                     value={nome}
-                    onChange={(e) => setNome(e.target.value)}
+                    onChange={(e) => {
+                      setNome(e.target.value);
+                      if (e.target.value.trim().split(" ").length >= 2)
+                        setNomeTouched(true);
+                    }}
                     onBlur={() => setNomeTouched(true)}
                     className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
                   />
@@ -216,7 +226,10 @@ export default function Cliente() {
                     id="cpfCnpj"
                     placeholder="Digite o CPF"
                     value={cpfCnpj}
-                    onChange={handleCpfCnpjChange}
+                    onChange={(e) => {
+                      handleCpfCnpjChange(e);
+                      if (isValidCPF(e.target.value.replace(/\D/g, ""))) setCpfTouched(true);
+                    }}
                     onBlur={() => setCpfTouched(true)}
                     maxLength={14}
                     className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
