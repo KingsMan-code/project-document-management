@@ -64,7 +64,7 @@ export default function ChangeWAY() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 px-4 py-8">
+      <main className="flex-1 px-4 py-8 flex items-center justify-center">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-semibold text-white mb-1">Gerenciamento de Documentos Jurídicos</h1>
