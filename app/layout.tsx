@@ -1,57 +1,46 @@
-import './globals.css'
+// app/layout.tsx
+import './globals.css';
+import { ReduxProvider } from '../store/provider';
 
 export const metadata = {
   title: 'Alcides e Mosinho',
   description: 'Aplicação web de Alcides e Mosinho',
-}
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt">
-      {/* <body className="bg-gradient-to-br from-primary via-primary to-secondary min-h-screen"> */}
-      <body
-        style={{
-          position: "relative",
-          minHeight: "100vh",
-          margin: 0,
-          padding: 0,
-        }}
-      >
+      <body style={{ position: 'relative', minHeight: '100vh', margin: 0, padding: 0 }}>
         {/* Imagem de fundo */}
         <div
           style={{
-            position: "fixed",
+            position: 'fixed',
             inset: 0,
             zIndex: 0,
             backgroundImage: "url('/images/3.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            width: "100vw",
-            height: "100vh",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            width: '100vw',
+            height: '100vh',
           }}
           aria-hidden="true"
         />
         {/* Sombreamento */}
         <div
           style={{
-            position: "fixed",
+            position: 'fixed',
             inset: 0,
             zIndex: 1,
-            background: "rgba(0,0,0,0.5)",
-            pointerEvents: "none",
+            background: 'rgba(0,0,0,0.5)',
+            pointerEvents: 'none',
           }}
           aria-hidden="true"
         />
-        {/* Conteúdo acima do background e do sombreado */}
-        <div style={{ position: "relative", zIndex: 2 }}>
-          {children}
+        {/* Conteúdo */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <ReduxProvider>{children}</ReduxProvider>
         </div>
       </body>
     </html>
-  )
+  );
 }
-
