@@ -50,10 +50,6 @@ export default function Cliente() {
     return isValidCPF(cpfCnpjRaw);
   };
 
-  const canAdvanceFromStep2 = () => {
-    return nome.trim().split(" ").length >= 2 && isValidDocument();
-  };
-
   const handleRemoveFile = (index: number) => {
     setDocumentosLocais((prev) => prev.filter((_, idx) => idx !== index));
   };
@@ -90,7 +86,7 @@ export default function Cliente() {
       })
     );
 
-    console.log("Cliente com documentos:", clienteComDocumentos);
+    console.log("Chamada para API:", clienteComDocumentos);
     setCurrentStep(4);
   };
 
@@ -228,7 +224,8 @@ export default function Cliente() {
                     value={cpfCnpj}
                     onChange={(e) => {
                       handleCpfCnpjChange(e);
-                      if (isValidCPF(e.target.value.replace(/\D/g, ""))) setCpfTouched(true);
+                      if (isValidCPF(e.target.value.replace(/\D/g, "")))
+                        setCpfTouched(true);
                     }}
                     onBlur={() => setCpfTouched(true)}
                     maxLength={14}
@@ -243,10 +240,20 @@ export default function Cliente() {
                 <button
                   onClick={() => setCurrentStep(3)}
                   disabled={
-                    !(nomeTouched && nome.trim().split(" ").length >= 2 && cpfTouched && isValidDocument())
+                    !(
+                      nomeTouched &&
+                      nome.trim().split(" ").length >= 2 &&
+                      cpfTouched &&
+                      isValidDocument()
+                    )
                   }
                   className={`w-1/2 font-bold py-3 px-6 rounded-lg transition-all ${
-                    !(nomeTouched && nome.trim().split(" ").length >= 2 && cpfTouched && isValidDocument())
+                    !(
+                      nomeTouched &&
+                      nome.trim().split(" ").length >= 2 &&
+                      cpfTouched &&
+                      isValidDocument()
+                    )
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "bg-yellow text-[#1A243F] hover:bg-[#D4B91A]"
                   }`}
@@ -269,7 +276,10 @@ export default function Cliente() {
 
               {/* ALERTA DE TIPO DE ARQUIVO */}
               {fileTypeError && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <div
+                  className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                  role="alert"
+                >
                   <strong className="font-bold">Atenção! </strong>
                   <span className="block sm:inline">
                     Só é permitido enviar imagens ou arquivos PDF.
@@ -278,7 +288,15 @@ export default function Cliente() {
                     className="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer"
                     onClick={() => setFileTypeError(false)}
                   >
-                    <svg className="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Fechar</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+                    <svg
+                      className="fill-current h-6 w-6 text-red-500"
+                      role="button"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                    >
+                      <title>Fechar</title>
+                      <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                    </svg>
                   </span>
                 </div>
               )}
