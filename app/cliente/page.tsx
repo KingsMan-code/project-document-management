@@ -69,7 +69,7 @@ export default function Cliente() {
     }
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     const clienteComDocumentos = {
       nome: nome,
       cpf: cpfCnpjRaw,
@@ -79,15 +79,32 @@ export default function Cliente() {
       })),
     };
 
-    dispatch(
-      setDadosPF({
-        nome,
-        cpf: cpfCnpjRaw,
-      })
-    );
+    const formdata = new FormData();
+    formdata.append("owner", nome);
+    for (const doc of clienteComDocumentos.documentos) {
+      formdata.append("file", doc.file, doc.nome);
+    }
 
-    console.log("Chamada para API:", clienteComDocumentos);
-    setCurrentStep(4);
+    try {
+      const response = await fetch("http://localhost:8080/upload", {
+        method: "POST",
+        body: formdata,
+      });
+      const result = await response.json();
+      console.log(result);
+      // Continue fluxo local
+      dispatch(
+        setDadosPF({
+          nome,
+          cpf: cpfCnpjRaw,
+        })
+      );
+      setCurrentStep(5);
+
+    } catch (error) {
+      console.log("error", error);
+      // Optionally, handle error UI feedback here
+    }
   };
 
   const handleDocumentUpload = async (
