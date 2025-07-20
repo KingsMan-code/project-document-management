@@ -22,6 +22,9 @@ export default function Cliente() {
   // Controle de seções
   const [currentStep, setCurrentStep] = useState(2);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  console.log('API URL:', API_URL);
+
   // Estados do formulário
   const [nome, setNome] = useState("");
   const [cpfCnpj, setCpfCnpj] = useState("");
@@ -86,7 +89,7 @@ export default function Cliente() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/upload", {
+      const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formdata,
       });

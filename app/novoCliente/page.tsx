@@ -19,6 +19,8 @@ export default function NovoCliente() {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   // Controle de steps
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -280,7 +282,7 @@ export default function NovoCliente() {
     });
 
     try {
-      const response = await fetch("http://localhost:8080/upload", {
+      const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formdata,
       });
