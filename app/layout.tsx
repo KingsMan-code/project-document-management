@@ -1,6 +1,5 @@
 import './globals.css';
 import { ReduxProvider } from '../store/provider';
-import { getAssetPath } from '../src/utils/paths';
 
 export const metadata = {
   title: 'Alcides e Mosinho',
@@ -17,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position: 'fixed',
             inset: 0,
             zIndex: 0,
-            backgroundImage: `url('${getAssetPath('../images/backgroundAzul.jpg')}')`,
+            backgroundImage: `url('./images/backgroundAzul.jpg')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             width: '100vw',
