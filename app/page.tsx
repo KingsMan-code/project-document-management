@@ -34,12 +34,13 @@ export default function Inicio() {
   }, [startTransition, router]);
 
   return (
-    <div
-      className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: `url('${getAssetPath('../images/backgroundAzul.jpg')}')`,
-      }}
-    >
+    // <div
+    //   className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
+    //   style={{
+    //     backgroundImage: `url('${getAssetPath('../images/backgroundAzul.jpg')}')`,
+    //   }}
+    // >
+    <div className="min-h-screen flex flex-col bg-cover bg-center">
       <AnimatePresence>
         {!showLayout && (
           <motion.div
