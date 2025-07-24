@@ -3,12 +3,17 @@
   "homepage": "https://kingsman-code.github.io/project-document-management",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KingsMan-code/project-document-management.git"
+  },
   "scripts": {
-    "dev": "set NODE_OPTIONS=--inspect&& next dev",
+    "dev": "set NODE_OPTIONS=--inspect && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "gh-pages -d out"
+    "predeploy": "next build && next export",
+    "deploy": "gh-pages -d out -b gh-pages"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",

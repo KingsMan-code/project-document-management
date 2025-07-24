@@ -213,7 +213,7 @@ export default function Cliente() {
                   <input
                     type="text"
                     id="nome"
-                    placeholder="Digite seu nome completo"
+                    placeholder="Digite seu nome completo "
                     value={nome}
                     onChange={(e) => {
                       setNome(e.target.value);
