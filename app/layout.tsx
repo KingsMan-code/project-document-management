@@ -1,4 +1,3 @@
-// app/layout.tsx
 import './globals.css';
 import { ReduxProvider } from '../store/provider';
 
@@ -19,7 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position: 'fixed',
             inset: 0,
             zIndex: 0,
-            backgroundImage: `url('${prefix}/images/3.jpg')`,
+
+            backgroundImage: `url('./images/backgroundAzul.jpg')`,
+
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             width: '100vw',

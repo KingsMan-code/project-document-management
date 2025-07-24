@@ -1,20 +1,21 @@
 import type { NextConfig } from "next";
 
 const repo = "project-document-management";
-const isProd = process.env.NODE_ENV === "production";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  output: "export",
-  basePath: isProd ? `/${repo}` : "",
-  assetPrefix: isProd ? `/${repo}/` : "",
-  images: {
-    unoptimized: true,
-  },
+  output: 'export',
+  basePath: isProduction ? `/${repo}` : '',
+  assetPrefix: isProduction ? `/${repo}` : '',
+  // basePath: '/project-document-management',
+  // assetPrefix: '/project-document-management/',
   trailingSlash: true,
-  env: {
-    NEXT_PUBLIC_BASE_PATH: isProd ? `/${repo}` : "",
-  },
+  images: {
+    unoptimized: true
+  }
+
 };
 
 export default nextConfig;
+
