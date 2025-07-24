@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../src/components/Header';
 import Footer from '../src/components/Footer';
 
+const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 export default function Inicio() {
   const [startTransition, setStartTransition] = useState(false);
   const [showLayout, setShowLayout] = useState(false);
@@ -33,6 +35,7 @@ export default function Inicio() {
   }, [startTransition, router]);
 
   return (
+
     // <div
     //   className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
     //   style={{
@@ -40,6 +43,7 @@ export default function Inicio() {
     //   }}
     // >
     <div className="min-h-screen flex flex-col bg-cover bg-center">
+
       <AnimatePresence>
         {!showLayout && (
           <motion.div

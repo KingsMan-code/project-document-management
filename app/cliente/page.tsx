@@ -21,6 +21,9 @@ export default function Cliente() {
   // Controle de seções
   const [currentStep, setCurrentStep] = useState(2);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  console.log('API URL:', API_URL);
+
   // Estados do formulário
   const [nome, setNome] = useState("");
   const [cpfCnpj, setCpfCnpj] = useState("");
@@ -68,7 +71,7 @@ export default function Cliente() {
     }
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     const clienteComDocumentos = {
       nome: nome,
       cpf: cpfCnpjRaw,
@@ -78,15 +81,32 @@ export default function Cliente() {
       })),
     };
 
-    dispatch(
-      setDadosPF({
-        nome,
-        cpf: cpfCnpjRaw,
-      })
-    );
+    const formdata = new FormData();
+    formdata.append("owner", nome);
+    for (const doc of clienteComDocumentos.documentos) {
+      formdata.append("file", doc.file, doc.nome);
+    }
 
-    console.log("Chamada para API:", clienteComDocumentos);
-    setCurrentStep(4);
+    try {
+      const response = await fetch(`${API_URL}/upload`, {
+        method: "POST",
+        body: formdata,
+      });
+      const result = await response.json();
+      console.log(result);
+      // Continue fluxo local
+      dispatch(
+        setDadosPF({
+          nome,
+          cpf: cpfCnpjRaw,
+        })
+      );
+      setCurrentStep(5);
+
+    } catch (error) {
+      console.log("error", error);
+      // Optionally, handle error UI feedback here
+    }
   };
 
   const handleDocumentUpload = async (
@@ -192,7 +212,7 @@ export default function Cliente() {
                   <input
                     type="text"
                     id="nome"
-                    placeholder="Digite seu nome completo"
+                    placeholder="Digite seu nome completo "
                     value={nome}
                     onChange={(e) => {
                       setNome(e.target.value);
