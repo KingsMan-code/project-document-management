@@ -13,9 +13,7 @@
     "postbuild": "touch out/.nojekyll",
     "deploy": "npm run build && npm run postbuild && gh-pages -d out --dotfiles --nojekyll",
     "start": "next start",
-    "lint": "next lint",
-    "deploy": "cross-env NODE_ENV=production npm run build && gh-pages -d out"
-
+    "lint": "next lint"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
