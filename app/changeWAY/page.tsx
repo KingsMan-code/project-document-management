@@ -5,6 +5,8 @@ import Header from '../../src/components/Header';
 import Footer from '../../src/components/Footer';
 import { useState } from 'react';
 
+const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 export default function ChangeWAY() {
   const router = useRouter();
 
@@ -13,7 +15,7 @@ export default function ChangeWAY() {
       id: 1,
       title: 'Já sou cliente',
       description: 'Já sou cliente do escritório e quero adicionar os documentos novos solicitados.',
-      image: '/law-card-2.jpg',
+      image: `${prefix}/law-card-2.jpg`,
       buttonText: 'Enviar Documentos',
       redirect: '/cliente', // Adicione a rota aqui
     },
@@ -21,7 +23,7 @@ export default function ChangeWAY() {
       id: 2,
       title: 'Sou novo cliente',
       description: 'Sou novo cliente do escritório e quero enviar meus documentos para análise de caso.',
-      image: '/law-card-9.webp',
+      image: `${prefix}/law-card-9.webp`,
       buttonText: 'Enviar Documentos',
       redirect: '/novoCliente', // Adicione a rota aqui
     },
