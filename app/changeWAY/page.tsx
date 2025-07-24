@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import Header from '../../src/components/Header';
 import Footer from '../../src/components/Footer';
 import { useState } from 'react';
+import { getAssetPath } from '../../src/utils/paths';
 
 export default function ChangeWAY() {
   const router = useRouter();
@@ -13,7 +14,7 @@ export default function ChangeWAY() {
       id: 1,
       title: 'Já sou cliente',
       description: 'Já sou cliente do escritório e quero adicionar os documentos novos solicitados.',
-      image: '../images/card1.jpg',
+      image: getAssetPath('/images/card1.jpg'),
       buttonText: 'Enviar Documentos',
       redirect: '/cliente',
     },
@@ -21,7 +22,7 @@ export default function ChangeWAY() {
       id: 2,
       title: 'Sou novo cliente',
       description: 'Sou novo cliente do escritório e quero enviar meus documentos para análise de caso.',
-      image: '../images/card2.jpg',
+      image: getAssetPath('/images/card2.jpg'),
       buttonText: 'Enviar Documentos',
       redirect: '/novoCliente',
     },

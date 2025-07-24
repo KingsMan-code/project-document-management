@@ -5,10 +5,10 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
   output: 'export',
-  // basePath: isProduction ? `/${repo}` : '',
-  // assetPrefix: isProduction ? `/${repo}` : '',
-  basePath: '/project-document-management',
-  assetPrefix: '/project-document-management/',
+  basePath: isProduction ? `/${repo}` : '',
+  assetPrefix: isProduction ? `/${repo}` : '',
+  // basePath: '/project-document-management',
+  // assetPrefix: '/project-document-management/',
   trailingSlash: true,
   images: {
     unoptimized: true
