@@ -15,7 +15,7 @@ export default function ChangeWAY() {
       description: 'Já sou cliente do escritório e quero adicionar os documentos novos solicitados.',
       image: '/law-card-2.jpg',
       buttonText: 'Enviar Documentos',
-      redirect: '/cliente', // Adicione a rota aqui
+      redirect: '/cliente',
     },
     {
       id: 2,
@@ -23,7 +23,7 @@ export default function ChangeWAY() {
       description: 'Sou novo cliente do escritório e quero enviar meus documentos para análise de caso.',
       image: '/law-card-9.webp',
       buttonText: 'Enviar Documentos',
-      redirect: '/novoCliente', // Adicione a rota aqui
+      redirect: '/novoCliente',
     },
   ];
 

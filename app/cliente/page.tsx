@@ -1,4 +1,3 @@
-// app/cliente/page.tsx - VERSÃO CORRIGIDA COMPLETA
 "use client";
 
 import { useRouter } from "next/navigation";
