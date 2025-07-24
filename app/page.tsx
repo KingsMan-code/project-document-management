@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../src/components/Header';
 import Footer from '../src/components/Footer';
-import { getAssetPath } from '../src/utils/paths';
 
 export default function Inicio() {
   const [startTransition, setStartTransition] = useState(false);
