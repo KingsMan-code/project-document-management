@@ -1,4 +1,3 @@
-// NovoCliente.tsx - VERSÃO COMPLETA COM TODOS OS ESTILOS E COMPORTAMENTOS
 "use client";
 
 import { useState } from "react";

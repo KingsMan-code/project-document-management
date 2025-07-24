@@ -1,4 +1,3 @@
-// pages/api/upload-document.ts
 
 import { NextApiRequest, NextApiResponse } from 'next';
 import { google } from 'googleapis';
