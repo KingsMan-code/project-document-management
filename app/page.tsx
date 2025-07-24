@@ -54,6 +54,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../src/components/Header';
 import Footer from '../src/components/Footer';
 
+const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 export default function Inicio() {
   const [startTransition, setStartTransition] = useState(false);
   const [showLayout, setShowLayout] = useState(false);
@@ -84,7 +86,7 @@ export default function Inicio() {
     <div
       className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: `url('/background-law.jpg')`, // substitua pelo caminho correto da imagem
+        backgroundImage: `url('${prefix}/images/background2.jpg')`,
       }}
     >
       <AnimatePresence>

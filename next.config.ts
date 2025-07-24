@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  trailingSlash: true,
+  env: {
+    NEXT_PUBLIC_BASE_PATH: isProd ? `/${repo}` : "",
+  },
 };
 
 export default nextConfig;
