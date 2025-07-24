@@ -2,6 +2,8 @@
 import './globals.css';
 import { ReduxProvider } from '../store/provider';
 
+const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 export const metadata = {
   title: 'Alcides e Mosinho',
   description: 'Aplicação web de Alcides e Mosinho',
@@ -17,7 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             position: 'fixed',
             inset: 0,
             zIndex: 0,
-            backgroundImage: "url('/images/3.jpg')",
+            backgroundImage: `url('${prefix}/images/3.jpg')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             width: '100vw',

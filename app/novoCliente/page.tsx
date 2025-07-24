@@ -19,6 +19,8 @@ export default function NovoCliente() {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   // Controle de steps
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -270,24 +272,34 @@ export default function NovoCliente() {
     </div>
   );
 
-  const handleFinalSubmit = () => {
-    const clienteComDocumentos = {
-      nome: nome,
-      cpf: cpfRaw,
-      documentosIdentidade,
-      documentosResidencia,
-      documentosProcuracao,
-    };
+  const handleFinalSubmit = async () => {
+    const formdata = new FormData();
+    formdata.append("owner", nome);
 
-    dispatch(
-      setDadosPF({
-        nome,
-        cpf: cpfRaw,
-      })
-    );
+    // Adiciona todos os arquivos de todas as categorias
+    [...documentosIdentidade, ...documentosResidencia, ...documentosProcuracao].forEach((doc) => {
+      formdata.append("file", doc.file, doc.nomeAtribuido);
+    });
 
-    console.log("Cliente com documentos:", clienteComDocumentos);
-    setCurrentStep(5);
+    try {
+      const response = await fetch(`${API_URL}/upload`, {
+        method: "POST",
+        body: formdata,
+      });
+      const result = await response.json();
+      console.log(result);
+      // Continue fluxo local
+      dispatch(
+        setDadosPF({
+          nome,
+          cpf: cpfRaw,
+        })
+      );
+      setCurrentStep(5);
+    } catch (error) {
+      console.log("error", error);
+      // Optionally, handle error UI feedback here
+    }
   };
 
   const getTotalDocumentos = () => {

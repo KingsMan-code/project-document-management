@@ -1,19 +1,28 @@
 {
   "name": "project-document-management",
+  "homepage": "https://kingsman-code.github.io/project-document-management",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KingsMan-code/project-document-management.git"
+  },
   "scripts": {
-    "dev": "next dev",
+    "dev": "set NODE_OPTIONS=--inspect && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "cross-env NODE_ENV=production npm run build && gh-pages -d out"
+
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
+    "form-data": "^4.0.3",
     "formidable": "^3.5.4",
     "framer-motion": "^12.18.1",
     "googleapis": "^150.0.1",
     "next": "15.3.3",
+    "node-fetch": "^3.3.2",
     "pdf-lib": "^1.17.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -27,6 +36,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
+    "gh-pages": "^6.3.0",
     "postcss": "^8.5.4",
     "typescript": "^5"
   }
