@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '../src/components/Header';
 import Footer from '../src/components/Footer';
+import { getAssetPath } from '../src/utils/paths';
 
 export default function Inicio() {
   const [startTransition, setStartTransition] = useState(false);
@@ -36,7 +37,7 @@ export default function Inicio() {
     <div
       className="min-h-screen flex flex-col bg-cover bg-center bg-no-repeat"
       style={{
-        backgroundImage: `url('/background-law.jpg')`, // substitua pelo caminho correto da imagem
+        backgroundImage: `url('${getAssetPath('/images/3.jpg')}')`,
       }}
     >
       <AnimatePresence>

@@ -4,10 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-
     "build": "next build",
     "deploy": "npm run build && gh-pages -d out",
-
     "start": "next start",
     "lint": "next lint"
   },

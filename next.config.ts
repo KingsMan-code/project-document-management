@@ -1,9 +1,17 @@
 import type { NextConfig } from "next";
 
 const repo = "project-document-management";
+const isProduction = process.env.NODE_ENV === "production";
 
 const nextConfig: NextConfig = {
-  routerType: "hash",
+  output: 'export',
+  basePath: isProduction ? `/${repo}` : '',
+  assetPrefix: isProduction ? `/${repo}` : '',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  }
 };
 
 export default nextConfig;
+
