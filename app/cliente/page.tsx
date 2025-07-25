@@ -115,7 +115,11 @@ export default function Cliente() {
     } catch (error: any) {
       console.log("error", error);
       setErrorMessage(error.message || "Erro desconhecido");
-      setCurrentStep(5);
+      if (error.message && error.message.includes("Failed to fetch")) {
+        setCurrentStep(4);
+      } else {
+        setCurrentStep(5);
+      }
     } finally {
       setLoading(false);
     }
