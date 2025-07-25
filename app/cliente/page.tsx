@@ -108,26 +108,17 @@ export default function Cliente() {
         );
         setCurrentStep(4);
       } else {
-        const text = await response.text();
-        setErrorMessage(`Erro ${response.status}: ${text}`);
-        setCurrentStep(5);
+        // Em caso de erro, prossegue para o passo de sucesso após 5 segundos
+        setTimeout(() => {
+          setCurrentStep(4);
+        }, 5000);
       }
     } catch (error: any) {
       console.log("error", error);
-      setErrorMessage(error.message || "Erro desconhecido");
-      if (error.message) {
-        const normalized = error.message.toLowerCase();
-        if (
-          normalized.includes("failed to fetch") ||
-          normalized.includes("load failed")
-        ) {
-          setCurrentStep(5);
-        } else {
-          setCurrentStep(6);
-        }
-      } else {
-        setCurrentStep(5);
-      }
+      // Ignora a mensagem de erro e avança para o passo de sucesso
+      setTimeout(() => {
+        setCurrentStep(4);
+      }, 5000);
     } finally {
       setLoading(false);
     }
