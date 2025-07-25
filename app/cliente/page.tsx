@@ -90,37 +90,31 @@ export default function Cliente() {
     for (const doc of clienteComDocumentos.documentos) {
       formdata.append("file", doc.file, doc.nome);
     }
+
     setLoading(true);
     setErrorMessage(null);
+
+    // Avança para o passo de sucesso após 3 segundos,
+    // independentemente do resultado da requisição
+    setTimeout(() => {
+      dispatch(
+        setDadosPF({
+          nome,
+          cpf: cpfCnpjRaw,
+        })
+      );
+      setCurrentStep(4);
+      setLoading(false);
+    }, 3000);
+
     try {
-      const response = await fetch(`${API_URL}/upload`, {
+      await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formdata,
       });
-      if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-        dispatch(
-          setDadosPF({
-            nome,
-            cpf: cpfCnpjRaw,
-          })
-        );
-        setCurrentStep(4);
-      } else {
-        // Em caso de erro, prossegue para o passo de sucesso após 5 segundos
-        setTimeout(() => {
-          setCurrentStep(4);
-        }, 5000);
-      }
     } catch (error: any) {
       console.log("error", error);
-      // Ignora a mensagem de erro e avança para o passo de sucesso
-      setTimeout(() => {
-        setCurrentStep(4);
-      }, 5000);
-    } finally {
-      setLoading(false);
+      // Erros são apenas registrados no console
     }
   };
 
