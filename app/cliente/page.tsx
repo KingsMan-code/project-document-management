@@ -23,7 +23,7 @@ export default function Cliente() {
   const [currentStep, setCurrentStep] = useState(2);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  console.log('API URL:', API_URL);
+  console.log("API URL:", API_URL);
 
   // Estados do formulário
   const [nome, setNome] = useState("");
@@ -115,8 +115,16 @@ export default function Cliente() {
     } catch (error: any) {
       console.log("error", error);
       setErrorMessage(error.message || "Erro desconhecido");
-      if (error.message && error.message.includes("Failed to fetch")) {
-        setCurrentStep(4);
+      if (error.message) {
+        const normalized = error.message.toLowerCase();
+        if (
+          normalized.includes("failed to fetch") ||
+          normalized.includes("load failed")
+        ) {
+          setCurrentStep(5);
+        } else {
+          setCurrentStep(6);
+        }
       } else {
         setCurrentStep(5);
       }
@@ -462,7 +470,9 @@ export default function Cliente() {
 
           {currentStep === 5 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6 text-red-600">Serviço indisponível</h1>
+              <h1 className="text-3xl font-bold text-center mb-6 text-red-600">
+                Serviço indisponível
+              </h1>
               <p className="text-center text-[#CA9D14] mb-8">
                 Contate o escritório informando o erro abaixo.
               </p>
