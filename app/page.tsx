@@ -59,7 +59,7 @@ export default function Inicio() {
               transition={{ duration: 1.2 }}
               className="text-4xl font-bold text-white underline underline-offset-8 decoration-yellow"
             >
-              Alcides e Mosinho
+              Alcides e Mosinho Novos Erros 
             </motion.h1>
 
             <p className="text-xs text-lightGray mt-4 font-extralight max-w-xl">
