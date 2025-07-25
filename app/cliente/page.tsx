@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { setDadosPF } from "../../store/clienteSlice";
 import { formatCpfCnpj, isValidCPF } from "../../src/utils/validation";
 import { PDFDocument } from "pdf-lib";
+import Spinner from "../../src/components/Spinner";
 
 interface DocumentoLocal {
   file: File;
@@ -31,6 +32,9 @@ export default function Cliente() {
   const [documentosLocais, setDocumentosLocais] = useState<DocumentoLocal[]>(
     []
   );
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Estados para edição de documentos
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
@@ -86,26 +90,34 @@ export default function Cliente() {
     for (const doc of clienteComDocumentos.documentos) {
       formdata.append("file", doc.file, doc.nome);
     }
-
+    setLoading(true);
+    setErrorMessage(null);
     try {
       const response = await fetch(`${API_URL}/upload`, {
         method: "POST",
         body: formdata,
       });
-      const result = await response.json();
-      console.log(result);
-      // Continue fluxo local
-      dispatch(
-        setDadosPF({
-          nome,
-          cpf: cpfCnpjRaw,
-        })
-      );
-      setCurrentStep(5);
-
-    } catch (error) {
+      if (response.ok) {
+        const result = await response.json();
+        console.log(result);
+        dispatch(
+          setDadosPF({
+            nome,
+            cpf: cpfCnpjRaw,
+          })
+        );
+        setCurrentStep(4);
+      } else {
+        const text = await response.text();
+        setErrorMessage(`Erro ${response.status}: ${text}`);
+        setCurrentStep(5);
+      }
+    } catch (error: any) {
       console.log("error", error);
-      // Optionally, handle error UI feedback here
+      setErrorMessage(error.message || "Erro desconhecido");
+      setCurrentStep(5);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -189,6 +201,7 @@ export default function Cliente() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#1A243F]">
+      {loading && <Spinner />}
       <Header />
       <main className="flex-1 px-4 py-8 flex items-center justify-center">
         <div className="bg-white text-[#1A243F] rounded-2xl shadow-lg p-10 max-w-xl w-full relative border-l-8 border-[#ECC440]">
@@ -432,6 +445,26 @@ export default function Cliente() {
                   arquivo(s)
                 </p>
               </div>
+              <div className="flex justify-center">
+                <button
+                  onClick={() => router.push("/")}
+                  className="w-1/2 bg-yellow text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-all"
+                >
+                  Voltar ao Início
+                </button>
+              </div>
+            </>
+          )}
+
+          {currentStep === 5 && (
+            <>
+              <h1 className="text-3xl font-bold text-center mb-6 text-red-600">Serviço indisponível</h1>
+              <p className="text-center text-[#CA9D14] mb-8">
+                Contate o escritório informando o erro abaixo.
+              </p>
+              {errorMessage && (
+                <p className="text-center text-red-600 mb-8">{errorMessage}</p>
+              )}
               <div className="flex justify-center">
                 <button
                   onClick={() => router.push("/")}

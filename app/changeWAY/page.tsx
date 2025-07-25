@@ -5,11 +5,13 @@ import Header from '../../src/components/Header';
 import Footer from '../../src/components/Footer';
 import { useState } from 'react';
 import { getAssetPath } from '../../src/utils/paths';
+import Spinner from '../../src/components/Spinner';
 
 const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 export default function ChangeWAY() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const cards = [
     {
@@ -41,7 +43,10 @@ export default function ChangeWAY() {
       <div
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onClick={() => router.push(card.redirect)}
+        onClick={() => {
+          setLoading(true);
+          router.push(card.redirect);
+        }}
         className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.9] hover:scale-100 hover:shadow-2xl cursor-pointer"
         style={{
           background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
@@ -70,6 +75,7 @@ export default function ChangeWAY() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {loading && <Spinner />}
       <Header />
       <main className="flex-1 px-4 py-8 flex items-center justify-center">
         <div className="max-w-5xl mx-auto">
