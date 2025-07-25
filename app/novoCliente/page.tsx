@@ -309,8 +309,16 @@ export default function NovoCliente() {
     } catch (error: any) {
       console.log("error", error);
       setErrorMessage(error.message || "Erro desconhecido");
-      if (error.message && error.message.includes("Failed to fetch")) {
-        setCurrentStep(5);
+      if (error.message) {
+        const normalized = error.message.toLowerCase();
+        if (
+          normalized.includes("failed to fetch") ||
+          normalized.includes("load failed")
+        ) {
+          setCurrentStep(5);
+        } else {
+          setCurrentStep(6);
+        }
       } else {
         setCurrentStep(6);
       }
