@@ -13,7 +13,6 @@
     "start": "next start",
     "lint": "next lint",
     "deploy": "cross-env NODE_ENV=production npm run build && gh-pages -d out"
-
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
@@ -36,6 +35,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
+    "cross-env": "^7.0.3",
     "gh-pages": "^6.3.0",
     "postcss": "^8.5.4",
     "typescript": "^5"

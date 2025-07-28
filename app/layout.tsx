@@ -1,6 +1,7 @@
 // app/layout.tsx
 import './globals.css';
 import { ReduxProvider } from '../store/provider';
+import HashUpdater from '../src/components/HashUpdater';
 
 const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
@@ -40,7 +41,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         {/* Conteúdo */}
         <div style={{ position: 'relative', zIndex: 2 }}>
-          <ReduxProvider>{children}</ReduxProvider>
+          <ReduxProvider>
+            <HashUpdater />
+            {children}
+          </ReduxProvider>
         </div>
       </body>
     </html>
