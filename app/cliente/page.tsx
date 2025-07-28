@@ -20,7 +20,7 @@ export default function Cliente() {
   const dispatch = useDispatch();
 
   // Controle de seções
-  const [currentStep, setCurrentStep] = useState(2);
+  const [currentStep, setCurrentStep] = useState(1);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   console.log("API URL:", API_URL);
@@ -117,7 +117,7 @@ export default function Cliente() {
           email,
         })
       );
-      setCurrentStep(4);
+      setCurrentStep(3);
       setLoading(false);
     }, 3000);
 
@@ -216,8 +216,8 @@ export default function Cliente() {
       <Header />
       <main className="flex-1 px-4 py-8 flex items-center justify-center">
         <div className="bg-white text-[#1A243F] rounded-2xl shadow-lg p-10 max-w-xl w-full relative border-l-8 border-[#ECC440]">
-          {/* SEÇÃO 2 */}
-          {currentStep === 2 && (
+          {/* SEÇÃO 1 */}
+          {currentStep === 1 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">
                 Dados Pessoais
@@ -331,7 +331,7 @@ export default function Cliente() {
               </div>
               <div className="flex justify-center mt-6">
                 <button
-                  onClick={() => setCurrentStep(3)}
+                  onClick={() => setCurrentStep(2)}
                   disabled={
                     !(
                       nomeTouched &&
@@ -365,8 +365,8 @@ export default function Cliente() {
             </>
           )}
 
-          {/* SEÇÃO 3 */}
-          {currentStep === 3 && (
+          {/* SEÇÃO 2 */}
+          {currentStep === 2 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">
                 Documentos
@@ -474,7 +474,7 @@ export default function Cliente() {
               </div>
               <div className="flex gap-2 mt-6">
                 <button
-                  onClick={() => setCurrentStep(2)}
+                  onClick={() => setCurrentStep(1)}
                   className="w-1/2 bg-gray-200 text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-all"
                 >
                   Anterior
@@ -494,8 +494,8 @@ export default function Cliente() {
             </>
           )}
 
-          {/* SEÇÃO 4 */}
-          {currentStep === 4 && (
+          {/* SEÇÃO 3 */}
+          {currentStep === 3 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Obrigado!</h1>
               <p className="text-center text-[#CA9D14] mb-8">
@@ -531,7 +531,7 @@ export default function Cliente() {
             </>
           )}
 
-          {currentStep === 5 && (
+          {currentStep === 4 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6 text-red-600">
                 Serviço indisponível
@@ -554,16 +554,16 @@ export default function Cliente() {
           )}
 
           {/* Indicador de progresso com apenas 2 etapas */}
-          {(currentStep === 2 || currentStep === 3) && (
+          {(currentStep === 1 || currentStep === 2) && (
             <div className="mt-6 pt-4 border-t border-gray-200">
               <div className="flex justify-between text-xs text-gray-500 mb-2">
                 <span>Progresso</span>
-                <span>{currentStep === 2 ? "1/2" : "2/2"}</span>
+                <span>{currentStep === 1 ? "1/2" : "2/2"}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${currentStep === 2 ? 50 : 100}%` }}
+                  style={{ width: `${currentStep === 1 ? 50 : 100}%` }}
                 ></div>
               </div>
             </div>
