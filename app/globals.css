@@ -95,3 +95,9 @@
 .hover\:filter-none:hover {
   filter: none;
 }
+
+body {
+  background-image: url('/images/backgroundAzul.jpg');
+  background-size: cover;
+  background-position: center;
+}

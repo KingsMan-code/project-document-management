@@ -1,8 +1,6 @@
 import "./globals.css";
 import { ReduxProvider } from "../store/provider";
 
-const prefix = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
 export const metadata = {
   title: "Alcides e Mosinho",
   description: "Aplicação web de Alcides e Mosinho",
@@ -23,22 +21,7 @@ export default function RootLayout({
           padding: 0,
         }}
       >
-        {/* Imagem de fundo */}
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 0,
-
-            // backgroundImage: `url('./images/backgroundAzul.jpg')`,
-            backgroundImage: `url('${prefix}/images/backgroundAzul.jpg')`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            width: "100vw",
-            height: "100vh",
-          }}
-          aria-hidden="true"
-        />
+        {/* Imagem de fundo movida para CSS global */}
         {/* Sombreamento */}
         <div
           style={{
