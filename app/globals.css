@@ -97,7 +97,7 @@
 }
 
 body {
-  background-image: url('/images/backgroundAzul.jpg');
+  background-image: url('../public/images/backgroundAzul.jpg');
   background-size: cover;
   background-position: center;
 }
