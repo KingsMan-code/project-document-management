@@ -20,6 +20,7 @@ export default function NovoCliente() {
   const dispatch = useDispatch();
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const CONTRATO_API_URL = process.env.NEXT_PUBLIC_CONTRATO_API_URL;
 
   // Controle de steps
   const [currentStep, setCurrentStep] = useState(1);
@@ -35,6 +36,7 @@ export default function NovoCliente() {
   const [documentosIdentidade, setDocumentosIdentidade] = useState<DocumentoLocal[]>([]);
   const [documentosResidencia, setDocumentosResidencia] = useState<DocumentoLocal[]>([]);
   const [documentosProcuracao, setDocumentosProcuracao] = useState<DocumentoLocal[]>([]);
+  const [documentosContrato, setDocumentosContrato] = useState<DocumentoLocal[]>([]);
 
   // Estados para edição de documentos
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
@@ -50,6 +52,10 @@ export default function NovoCliente() {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const TOTAL_STEPS = 6;
+  const effectiveStep = Math.min(currentStep, TOTAL_STEPS);
+  const progressPercent = (effectiveStep / TOTAL_STEPS) * 100;
 
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -102,7 +108,11 @@ export default function NovoCliente() {
       });
 
       const pdfBytes = await pdfDoc.save();
-      const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
+      const arrayBuffer = pdfBytes.buffer.slice(
+        pdfBytes.byteOffset,
+        pdfBytes.byteOffset + pdfBytes.byteLength
+      ) as ArrayBuffer;
+      const pdfBlob = new Blob([arrayBuffer], { type: "application/pdf" });
       const newFile = new File(
         [pdfBlob],
         file.name.replace(/\.[^.]+$/, ".pdf"),
@@ -174,10 +184,14 @@ export default function NovoCliente() {
 
   const salvarEdicao = () => {
     if (editandoIndex !== null && editandoCategoria) {
-      const setDocumentos = 
-        editandoCategoria === "identidade" ? setDocumentosIdentidade :
-        editandoCategoria === "residencia" ? setDocumentosResidencia :
-        setDocumentosProcuracao;
+      const setDocumentos =
+        editandoCategoria === "identidade"
+          ? setDocumentosIdentidade
+          : editandoCategoria === "residencia"
+          ? setDocumentosResidencia
+          : editandoCategoria === "procuracao"
+          ? setDocumentosProcuracao
+          : setDocumentosContrato;
 
       setDocumentos((prev) => {
         const atualizados = [...prev];
@@ -199,10 +213,12 @@ export default function NovoCliente() {
   ) => (
     <div className="space-y-4">
       <h3 className="text-xl font-bold text-center text-[#CA9D14]">{titulo}</h3>
-      
-      {/* ALERTA DE TIPO DE ARQUIVO */}
+
       {fileTypeError && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+          role="alert"
+        >
           <strong className="font-bold">Atenção! </strong>
           <span className="block sm:inline">
             Só é permitido enviar imagens ou arquivos PDF.
@@ -211,9 +227,14 @@ export default function NovoCliente() {
             className="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer"
             onClick={() => setFileTypeError(false)}
           >
-            <svg className="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <svg
+              className="fill-current h-6 w-6 text-red-500"
+              role="button"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
               <title>Fechar</title>
-              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
             </svg>
           </span>
         </div>
@@ -224,8 +245,12 @@ export default function NovoCliente() {
         accept="application/pdf,image/*"
         multiple
         onChange={(e) => handleDocumentUpload(e, setDocumentos, categoria)}
-        className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
+        className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-pointer hover:border-[#ECC440] focus:outline-none"
       />
+
+      <p className="text-xs text-gray-500 text-center">
+        Formatos aceitos: PDF, JPG, PNG. Tamanho máximo por arquivo: 10MB.
+      </p>
 
       {documentos.length > 0 && (
         <div>
@@ -292,20 +317,49 @@ export default function NovoCliente() {
     </div>
   );
 
+  const enviarContratos = async () => {
+    if (documentosContrato.length === 0) return;
+
+    const contratoFormData = new FormData();
+    contratoFormData.append("nome", nome);
+    contratoFormData.append("cpf", cpf);
+    contratoFormData.append("telefone", telefone);
+    contratoFormData.append("email", email);
+
+    documentosContrato.forEach((doc) => {
+      contratoFormData.append("file", doc.file, doc.nomeAtribuido);
+    });
+
+    const endpoint = CONTRATO_API_URL || (API_URL ? `${API_URL}/contrato` : null);
+
+    if (!endpoint) {
+      console.warn("Endpoint de contrato não configurado.");
+      return;
+    }
+
+    try {
+      await fetch(endpoint, {
+        method: "POST",
+        body: contratoFormData,
+      });
+    } catch (error) {
+      console.error("Erro ao enviar contrato:", error);
+    }
+  };
+
   const handleFinalSubmit = async () => {
     const formdata = new FormData();
     formdata.append("owner", nome);
 
-    // Adiciona todos os arquivos de todas as categorias
-    [...documentosIdentidade, ...documentosResidencia, ...documentosProcuracao].forEach((doc) => {
-      formdata.append("file", doc.file, doc.nomeAtribuido);
-    });
+    [...documentosIdentidade, ...documentosResidencia, ...documentosProcuracao].forEach(
+      (doc) => {
+        formdata.append("file", doc.file, doc.nomeAtribuido);
+      }
+    );
 
     setLoading(true);
     setErrorMessage(null);
 
-    // Avança para o passo de sucesso após 3 segundos,
-    // independentemente do resultado da requisição
     setTimeout(() => {
       dispatch(
         setDadosPF({
@@ -315,23 +369,34 @@ export default function NovoCliente() {
           email,
         })
       );
-      setCurrentStep(5);
+      setCurrentStep(6);
       setLoading(false);
     }, 3000);
 
-    try {
-      await fetch(`${API_URL}/upload`, {
-        method: "POST",
-        body: formdata,
-      });
-    } catch (error: any) {
-      console.log("error", error);
-      // Erros são apenas registrados no console
+    if (API_URL) {
+      try {
+        await fetch(`${API_URL}/upload`, {
+          method: "POST",
+          body: formdata,
+        });
+      } catch (error: any) {
+        console.log("error", error);
+        // Erros são apenas registrados no console
+      }
+    } else {
+      console.warn("API_URL não configurada para envio de documentos gerais.");
     }
+
+    await enviarContratos();
   };
 
   const getTotalDocumentos = () => {
-    return documentosIdentidade.length + documentosResidencia.length + documentosProcuracao.length;
+    return (
+      documentosIdentidade.length +
+      documentosResidencia.length +
+      documentosProcuracao.length +
+      documentosContrato.length
+    );
   };
 
   return (
@@ -590,8 +655,45 @@ export default function NovoCliente() {
                   Anterior
                 </button>
                 <button
-                  onClick={handleFinalSubmit}
+                  onClick={() => setCurrentStep(5)}
                   className="w-1/2 bg-yellow text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-[#D4B91A] transition-all"
+                >
+                  Próximo
+                </button>
+              </div>
+            </>
+          )}
+
+          {/* STEP 5 - CONTRATO */}
+          {currentStep === 5 && (
+            <>
+              <h1 className="text-3xl font-bold text-center mb-6">Contrato</h1>
+              <p className="text-center text-[#CA9D14] mb-8">
+                Envie o contrato referente à prestação do serviço
+              </p>
+
+              {renderDocumentSection(
+                "Contrato",
+                documentosContrato,
+                setDocumentosContrato,
+                "contrato"
+              )}
+
+              <div className="flex gap-2 mt-6">
+                <button
+                  onClick={() => setCurrentStep(4)}
+                  className="w-1/2 bg-gray-200 text-[#1A243F] font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-all"
+                >
+                  Anterior
+                </button>
+                <button
+                  onClick={handleFinalSubmit}
+                  disabled={documentosContrato.length === 0}
+                  className={`w-1/2 font-bold py-3 px-6 rounded-lg transition-all ${
+                    documentosContrato.length === 0
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-yellow text-[#1A243F] hover:bg-[#D4B91A]"
+                  }`}
                 >
                   Finalizar
                 </button>
@@ -599,8 +701,8 @@ export default function NovoCliente() {
             </>
           )}
 
-          {/* STEP 5 - CONFIRMAÇÃO */}
-          {currentStep === 5 && (
+          {/* STEP 6 - CONFIRMAÇÃO */}
+          {currentStep === 6 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Obrigado!</h1>
               <p className="text-center text-[#CA9D14] mb-8">
@@ -630,6 +732,9 @@ export default function NovoCliente() {
                   <strong>Procurações:</strong> {documentosProcuracao.length} arquivo(s)
                 </p>
                 <p>
+                  <strong>Contratos:</strong> {documentosContrato.length} arquivo(s)
+                </p>
+                <p>
                   <strong>Total de documentos:</strong> {getTotalDocumentos()} arquivo(s)
                 </p>
               </div>
@@ -644,7 +749,7 @@ export default function NovoCliente() {
             </>
           )}
 
-          {currentStep === 6 && (
+          {currentStep === 7 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6 text-red-600">Serviço indisponível</h1>
               <p className="text-center text-[#CA9D14] mb-8">
@@ -665,16 +770,16 @@ export default function NovoCliente() {
           )}
 
           {/* Indicador de progresso */}
-          {currentStep >= 1 && currentStep <= 4 && (
+          {currentStep >= 1 && currentStep <= TOTAL_STEPS && (
             <div className="mt-6 pt-4 border-t border-gray-200">
               <div className="flex justify-between text-xs text-gray-500 mb-2">
                 <span>Progresso</span>
-                <span>{currentStep}/4</span>
+                <span>{effectiveStep}/{TOTAL_STEPS}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(currentStep / 4) * 100}%` }}
+                  style={{ width: `${progressPercent}%` }}
                 ></div>
               </div>
             </div>
