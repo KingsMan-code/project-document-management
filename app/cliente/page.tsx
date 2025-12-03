@@ -122,7 +122,7 @@ export default function Cliente() {
     }, 3000);
 
     try {
-      await fetch(`${API_URL}/upload`, {
+      await fetch(`${API_URL}/upload/documents`, {
         method: "POST",
         body: formdata,
       });

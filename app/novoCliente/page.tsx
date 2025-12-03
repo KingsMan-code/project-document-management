@@ -330,7 +330,7 @@ export default function NovoCliente() {
       contratoFormData.append("file", doc.file, doc.nomeAtribuido);
     });
 
-    const endpoint = CONTRATO_API_URL || (API_URL ? `${API_URL}/contrato` : null);
+    const endpoint = CONTRATO_API_URL || (API_URL ? `${API_URL}/upload/documents/contracts` : null);
 
     if (!endpoint) {
       console.warn("Endpoint de contrato não configurado.");
@@ -374,8 +374,9 @@ export default function NovoCliente() {
     }, 3000);
 
     if (API_URL) {
+      console.log(FormData);
       try {
-        await fetch(`${API_URL}/upload`, {
+        await fetch(`${API_URL}/upload/documents`, {
           method: "POST",
           body: formdata,
         });
