@@ -16,11 +16,10 @@ const isProduction = process.env.NODE_ENV === "production";
 
 // };
 
-const nextConfig = {
-  output: "export",
-  images: { unoptimized: true },
-  basePath: "",
-  assetPrefix: "",
+const nextConfig: NextConfig = {
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
