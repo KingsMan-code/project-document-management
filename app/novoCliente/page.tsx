@@ -11,7 +11,7 @@ import { setDadosPF } from "../../store/clienteSlice";
 import Spinner from "../../src/components/Spinner";
 
 interface DocumentoLocal {
-  file: File;
+  arquivo: File;
   nomeAtribuido: string;
 }
 
@@ -85,15 +85,15 @@ export default function NovoCliente() {
     );
   };
 
-  const converterImagemParaPDF = async (file: File): Promise<File | null> => {
+  const converterImagemParaPDF = async (arquivo: File): Promise<File | null> => {
     try {
       const pdfDoc = await PDFDocument.create();
-      const imageBytes = await file.arrayBuffer();
+      const imageBytes = await arquivo.arrayBuffer();
 
       let embeddedImage;
-      if (file.type === "image/jpeg" || file.type === "image/jpg") {
+      if (arquivo.type === "image/jpeg" || arquivo.type === "image/jpg") {
         embeddedImage = await pdfDoc.embedJpg(imageBytes);
-      } else if (file.type === "image/png") {
+      } else if (arquivo.type === "image/png") {
         embeddedImage = await pdfDoc.embedPng(imageBytes);
       } else {
         return null;
@@ -115,7 +115,7 @@ export default function NovoCliente() {
       const pdfBlob = new Blob([arrayBuffer], { type: "application/pdf" });
       const newFile = new File(
         [pdfBlob],
-        file.name.replace(/\.[^.]+$/, ".pdf"),
+        arquivo.name.replace(/\.[^.]+$/, ".pdf"),
         { type: "application/pdf" }
       );
 
@@ -143,13 +143,13 @@ export default function NovoCliente() {
         const pdfConvertido = await converterImagemParaPDF(file);
         if (pdfConvertido) {
           novosDocumentosLocais.push({
-            file: pdfConvertido,
+            arquivo: pdfConvertido,
             nomeAtribuido: pdfConvertido.name,
           });
         }
       } else if (tipo === "application/pdf") {
         novosDocumentosLocais.push({
-          file,
+          arquivo: file,
           nomeAtribuido: file.name,
         });
       } else {
@@ -295,7 +295,7 @@ export default function NovoCliente() {
                       ✎
                     </button>
                     <a
-                      href={URL.createObjectURL(doc.file)}
+                      href={URL.createObjectURL(doc.arquivo)}
                       download={doc.nomeAtribuido}
                       className="text-green-600 hover:text-green-800"
                     >
@@ -327,7 +327,7 @@ export default function NovoCliente() {
     contratoFormData.append("email", email);
 
     documentosContrato.forEach((doc) => {
-      contratoFormData.append("file", doc.file, doc.nomeAtribuido);
+      contratoFormData.append("arquivo", doc.arquivo, doc.nomeAtribuido);
     });
 
     const endpoint = CONTRATO_API_URL || (API_URL ? `${API_URL}/upload/documents/contracts` : null);
@@ -353,7 +353,7 @@ export default function NovoCliente() {
 
     [...documentosIdentidade, ...documentosResidencia, ...documentosProcuracao].forEach(
       (doc) => {
-        formdata.append("file", doc.file, doc.nomeAtribuido);
+        formdata.append("arquivo", doc.arquivo, doc.nomeAtribuido);
       }
     );
 
@@ -378,7 +378,7 @@ export default function NovoCliente() {
       try {
         await fetch(`${API_URL}/upload/documents`, {
           method: "POST",
-          body: formdata,
+            body: formdata,
         });
       } catch (error: any) {
         console.log("error", error);

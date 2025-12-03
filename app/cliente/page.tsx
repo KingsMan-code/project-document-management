@@ -11,7 +11,7 @@ import { PDFDocument } from "pdf-lib";
 import Spinner from "../../src/components/Spinner";
 
 interface DocumentoLocal {
-  file: File;
+  arquivo: File;
   nomeAtribuido: string;
 }
 
@@ -93,14 +93,14 @@ export default function Cliente() {
       cpf: cpfCnpjRaw,
       documentos: documentosLocais.map((doc) => ({
         nome: doc.nomeAtribuido,
-        file: doc.file,
+        arquivo: doc.arquivo,
       })),
     };
 
     const formdata = new FormData();
     formdata.append("owner", nome);
     for (const doc of clienteComDocumentos.documentos) {
-      formdata.append("file", doc.file, doc.nome);
+      formdata.append("arquivo", doc.arquivo, doc.nome);
     }
 
     setLoading(true);
@@ -180,7 +180,7 @@ export default function Cliente() {
           );
 
           novosDocumentosLocais.push({
-            file: newFile,
+            arquivo: newFile,
             nomeAtribuido: newFile.name,
           });
         } catch (err) {
@@ -188,7 +188,7 @@ export default function Cliente() {
         }
       } else if (tipo === "application/pdf") {
         novosDocumentosLocais.push({
-          file,
+          arquivo: file,
           nomeAtribuido: file.name,
         });
       } else {
@@ -452,7 +452,7 @@ export default function Cliente() {
                                 ✎
                               </button>
                               <a
-                                href={URL.createObjectURL(doc.file)}
+                                href={URL.createObjectURL(doc.arquivo)}
                                 download={doc.nomeAtribuido}
                                 className="text-green-600 hover:text-green-800"
                               >
