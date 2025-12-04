@@ -100,7 +100,7 @@ export default function Cliente() {
     const formdata = new FormData();
     formdata.append("cliente", nome);
     for (const doc of clienteComDocumentos.documentos) {
-      formdata.append("arquivo", doc.arquivo, doc.nome);
+      formdata.append("arquivos", doc.arquivo, doc.nome);
     }
 
     setLoading(true);

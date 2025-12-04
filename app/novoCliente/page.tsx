@@ -321,10 +321,11 @@ export default function NovoCliente() {
     if (documentosContrato.length === 0) return;
 
     const contratoFormData = new FormData();
-    contratoFormData.append("nome", nome);
-    contratoFormData.append("cpf", cpf);
-    contratoFormData.append("telefone", telefone);
-    contratoFormData.append("email", email);
+    contratoFormData.append("cliente", nome);
+    // contratoFormData.append("nome", nome);
+    // contratoFormData.append("cpf", cpf);
+    // contratoFormData.append("telefone", telefone);
+    // contratoFormData.append("email", email);
 
     documentosContrato.forEach((doc) => {
       contratoFormData.append("arquivo", doc.arquivo, doc.nomeAtribuido);
@@ -353,7 +354,7 @@ export default function NovoCliente() {
 
     [...documentosIdentidade, ...documentosResidencia, ...documentosProcuracao].forEach(
       (doc) => {
-        formdata.append("arquivo", doc.arquivo, doc.nomeAtribuido);
+        formdata.append("arquivos", doc.arquivo, doc.nomeAtribuido);
       }
     );
 
