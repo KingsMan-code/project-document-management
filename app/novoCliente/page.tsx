@@ -349,7 +349,7 @@ export default function NovoCliente() {
 
   const handleFinalSubmit = async () => {
     const formdata = new FormData();
-    formdata.append("owner", nome);
+    formdata.append("cliente", nome);
 
     [...documentosIdentidade, ...documentosResidencia, ...documentosProcuracao].forEach(
       (doc) => {
