@@ -330,7 +330,7 @@ export default function NovoCliente() {
       contratoFormData.append("arquivo", doc.arquivo, doc.nomeAtribuido);
     });
 
-    const endpoint = CONTRATO_API_URL || (API_URL ? `${API_URL}/upload/documents/contracts` : null);
+    const endpoint = CONTRATO_API_URL || (API_URL ? `${API_URL}/upload/documents/contract` : null);
 
     if (!endpoint) {
       console.warn("Endpoint de contrato não configurado.");
