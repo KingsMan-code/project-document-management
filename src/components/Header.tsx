@@ -17,7 +17,7 @@ export default function Header() {
           onClick={handleClick}
         >
           <h1 className="text-xl font-bold text-white">
-            Alcides e Mosinho
+            Juris Portal
           </h1>
         </div>
       </div>

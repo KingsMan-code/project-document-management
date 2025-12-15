@@ -2,8 +2,8 @@ import "./globals.css";
 import { ReduxProvider } from "../store/provider";
 
 export const metadata = {
-  title: "Alcides e Mosinho",
-  description: "Aplicação web de Alcides e Mosinho",
+  title: "Juris Portal",
+  description: "Aplicação web de Alcides e Mosinho o Juris Portal",
 };
 
 export default function RootLayout({

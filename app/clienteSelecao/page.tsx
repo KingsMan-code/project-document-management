@@ -1,38 +1,32 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import Header from '../../src/components/Header';
-import Footer from '../../src/components/Footer';
-import { useState } from 'react';
-import { getAssetPath } from '../../src/utils/paths';
-import Spinner from '../../src/components/Spinner';
+import { useRouter } from "next/navigation";
+import Header from "../../src/components/Header";
+import Footer from "../../src/components/Footer";
+import { useState } from "react";
+import { getAssetPath } from "../../src/utils/paths";
+import Spinner from "../../src/components/Spinner";
 
-const prefix = process.env.NEXT_PUBLIC_BASE_PATH || '';
-
-export default function ChangeWAY() {
+export default function ClienteSelecao() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const cards = [
     {
       id: 1,
-      title: 'Já sou cliente',
-      description: 'Já sou cliente do escritório e quero adicionar os documentos novos solicitados.',
-
-      image: getAssetPath('/images/card1.jpg'),
-
-      buttonText: 'Enviar Documentos',
-      redirect: '/clienteSelecao',
+      title: "Processo Já existente",
+      description: "Documentos de um processo já em andamento.",
+      image: getAssetPath("/images/card1.jpg"),
+      buttonText: "Enviar Documentos",
+      redirect: "/cliente",
     },
     {
       id: 2,
-      title: 'Sou novo cliente',
-      description: 'Sou novo cliente do escritório e quero enviar meus documentos para análise de caso.',
-
-      image: getAssetPath('/images/card2.jpg'),
-
-      buttonText: 'Enviar Documentos',
-      redirect: '/novoCliente',
+      title: "Novo processo",
+      description: "Documentos de um novo processo.",
+      image: getAssetPath("/images/card2.jpg"),
+      buttonText: "Enviar Documentos",
+      redirect: "/clienteNovoProcesso",
     },
   ];
 
@@ -49,16 +43,16 @@ export default function ChangeWAY() {
         }}
         className="flex flex-col h-full relative bg-white rounded-xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.9] hover:scale-100 hover:shadow-2xl cursor-pointer"
         style={{
-          background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
-          width: '400px',
-          height: '400px',
-          margin: '0 auto',
+          background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)",
+          width: "400px",
+          height: "400px",
+          margin: "0 auto",
         }}
       >
         <div className="relative overflow-hidden">
           <img
             className={`w-full h-56 object-cover transition-all duration-700 ${
-              isHovered ? 'grayscale-0' : 'grayscale'
+              isHovered ? "grayscale-0" : "grayscale"
             }`}
             src={card.image}
             alt={card.title}
@@ -66,8 +60,12 @@ export default function ChangeWAY() {
         </div>
 
         <div className="flex flex-col flex-1 p-6">
-          <div className="font-semibold text-xl mb-3 text-primary text-center">{card.title}</div>
-          <p className="text-textColor text-base leading-relaxed mb-3 text-center">{card.description}</p>
+          <div className="font-semibold text-xl mb-3 text-primary text-center">
+            {card.title}
+          </div>
+          <p className="text-textColor text-base leading-relaxed mb-3 text-center">
+            {card.description}
+          </p>
         </div>
       </div>
     );
@@ -80,7 +78,9 @@ export default function ChangeWAY() {
       <main className="flex-1 px-4 py-8 flex items-center justify-center">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-semibold text-white mb-1">Gerenciamento de Documentos Jurídicos</h1>
+            <h1 className="text-3xl font-semibold text-white mb-1">
+              Escolha o tipo de processo
+            </h1>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 justify-center max-w-4xl mx-auto items-center">
