@@ -143,7 +143,7 @@ export default function NovoCliente() {
     categoria: string
   ) => (
     <div className="space-y-4">
-      <h3 className="text-xl font-bold text-center text-[#CA9D14]">{titulo}</h3>
+      <h3 className="text-xl font-bold text-center ">{titulo}</h3>
 
       {fileTypeError && (
         <div
@@ -348,14 +348,14 @@ export default function NovoCliente() {
               <h1 className="text-3xl font-bold text-center mb-6">
                 Dados Pessoais
               </h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Informe seus dados para prosseguir
               </p>
               <div className="space-y-6">
                 <div>
                   <label
                     htmlFor="nome"
-                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                    className="block text-sm font-bold uppercase  mb-2"
                   >
                     Nome Completo
                   </label>
@@ -382,7 +382,7 @@ export default function NovoCliente() {
                 <div>
                   <label
                     htmlFor="cpf"
-                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                    className="block text-sm font-bold uppercase  mb-2"
                   >
                     CPF
                   </label>
@@ -407,7 +407,7 @@ export default function NovoCliente() {
                 <div>
                   <label
                     htmlFor="telefone"
-                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                    className="block text-sm font-bold uppercase  mb-2"
                   >
                     Telefone
                   </label>
@@ -431,7 +431,7 @@ export default function NovoCliente() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                    className="block text-sm font-bold uppercase  mb-2"
                   >
                     E-mail
                   </label>
@@ -494,7 +494,7 @@ export default function NovoCliente() {
               <h1 className="text-3xl font-bold text-center mb-6">
                 Documentos de Identidade
               </h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Envie seus documentos de identidade
               </p>
               
@@ -533,7 +533,7 @@ export default function NovoCliente() {
               <h1 className="text-3xl font-bold text-center mb-6">
                 Comprovante de Residência
               </h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Envie seu comprovante de residência
               </p>
               
@@ -572,7 +572,7 @@ export default function NovoCliente() {
               <h1 className="text-3xl font-bold text-center mb-6">
                 Procuração
               </h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Envie sua procuração (opcional)
               </p>
               
@@ -604,7 +604,7 @@ export default function NovoCliente() {
           {currentStep === 5 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Contrato</h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Envie o contrato referente à prestação do serviço
               </p>
 
@@ -641,7 +641,7 @@ export default function NovoCliente() {
           {currentStep === 6 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Obrigado!</h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Seus dados foram registrados com sucesso.
               </p>
               <div className="bg-gray-50 p-4 rounded-lg mb-6">
@@ -688,7 +688,7 @@ export default function NovoCliente() {
           {currentStep === 7 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6 text-red-600">Serviço indisponível</h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Contate o escritório informando o erro abaixo.
               </p>
               {errorMessage && (

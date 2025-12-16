@@ -153,14 +153,14 @@ export default function Cliente() {
               <h1 className="text-3xl font-bold text-center mb-6">
                 Dados Pessoais
               </h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Informe seus dados para prosseguir
               </p>
               <div className="space-y-6">
                 <div>
                   <label
                     htmlFor="nome"
-                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                    className="block text-sm font-bold uppercase  mb-2"
                   >
                     Nome Completo
                   </label>
@@ -187,7 +187,7 @@ export default function Cliente() {
                 <div>
                   <label
                     htmlFor="cpfCnpj"
-                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                    className="block text-sm font-bold uppercase  mb-2"
                   >
                     CPF
                   </label>
@@ -213,7 +213,7 @@ export default function Cliente() {
                 <div>
                   <label
                     htmlFor="telefone"
-                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                    className="block text-sm font-bold uppercase  mb-2"
                   >
                     Telefone
                   </label>
@@ -238,7 +238,7 @@ export default function Cliente() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-bold uppercase text-[#CA9D14] mb-2"
+                    className="block text-sm font-bold uppercase  mb-2"
                   >
                     E-mail
                   </label>
@@ -302,7 +302,7 @@ export default function Cliente() {
               <h1 className="text-3xl font-bold text-center mb-6">
                 Documentos
               </h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Envie seus documentos (opcional)
               </p>
 
@@ -432,7 +432,7 @@ export default function Cliente() {
           {currentStep === 4 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Obrigado!</h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Seus dados foram registrados com sucesso.
               </p>
               <div className="bg-gray-50 p-4 rounded-lg mb-6">
@@ -470,7 +470,7 @@ export default function Cliente() {
               <h1 className="text-3xl font-bold text-center mb-6 text-red-600">
                 Serviço indisponível
               </h1>
-              <p className="text-center text-[#CA9D14] mb-8">
+              <p className="text-center  mb-8">
                 Contate o escritório informando o erro abaixo.
               </p>
               {errorMessage && (
