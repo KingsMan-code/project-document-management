@@ -32,36 +32,87 @@ export const formatFileSize = (bytes: number) => {
 };
 
 const compressImageToJpeg = async (file: File): Promise<File> => {
+  const parseSvgDimensions = async (): Promise<{ width: number; height: number }> => {
+    try {
+      const text = await file.text();
+      const doc = new DOMParser().parseFromString(text, "image/svg+xml");
+      const svgEl = doc.querySelector("svg");
+      const viewBox = svgEl?.getAttribute("viewBox")?.split(/\s+/).map(Number);
+      const widthAttr = svgEl?.getAttribute("width") || "";
+      const heightAttr = svgEl?.getAttribute("height") || "";
+
+      const parsePx = (val: string) => {
+        const match = val.match(/([0-9.]+)/);
+        return match ? parseFloat(match[1]) : NaN;
+      };
+
+      const width = parsePx(widthAttr);
+      const height = parsePx(heightAttr);
+
+      if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+        return { width, height };
+      }
+
+      if (viewBox && viewBox.length === 4) {
+        const [, , vbw, vbh] = viewBox;
+        if (vbw > 0 && vbh > 0) return { width: vbw, height: vbh };
+      }
+    } catch (e) {
+      console.warn("Falha ao extrair dimensões do SVG", e);
+    }
+
+    return { width: 1000, height: 1000 };
+  };
+
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      const maxSide = Math.max(img.width, img.height);
-      const scale = maxSide > MAX_IMAGE_DIMENSION ? MAX_IMAGE_DIMENSION / maxSide : 1;
-      canvas.width = Math.max(1, Math.round(img.width * scale));
-      canvas.height = Math.max(1, Math.round(img.height * scale));
-      const ctx = canvas.getContext("2d");
-      if (!ctx) {
-        reject(new Error("Canvas context inválido"));
-        return;
-      }
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            reject(new Error("Falha ao comprimir imagem"));
+      const useSvgFallback = (img.width === 0 || img.height === 0) && file.type === "image/svg+xml";
+
+      const setCanvasSize = async () => {
+        if (useSvgFallback) {
+          const { width, height } = await parseSvgDimensions();
+          const maxSide = Math.max(width, height);
+          const scale = maxSide > MAX_IMAGE_DIMENSION ? MAX_IMAGE_DIMENSION / maxSide : 1;
+          canvas.width = Math.max(1, Math.round(width * scale));
+          canvas.height = Math.max(1, Math.round(height * scale));
+          return { drawWidth: width * scale, drawHeight: height * scale };
+        }
+
+        const maxSide = Math.max(img.width, img.height);
+        const scale = maxSide > MAX_IMAGE_DIMENSION ? MAX_IMAGE_DIMENSION / maxSide : 1;
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        return { drawWidth: canvas.width, drawHeight: canvas.height };
+      };
+
+      setCanvasSize()
+        .then(({ drawWidth, drawHeight }) => {
+          const ctx = canvas.getContext("2d");
+          if (!ctx) {
+            reject(new Error("Canvas context inválido"));
             return;
           }
-          const compressedFile = new File(
-            [blob],
-            file.name.replace(/\.[^.]+$/, ".jpg"),
-            { type: "image/jpeg" }
+          ctx.drawImage(img, 0, 0, drawWidth, drawHeight);
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                reject(new Error("Falha ao comprimir imagem"));
+                return;
+              }
+              const compressedFile = new File(
+                [blob],
+                file.name.replace(/\.[^.]+$/, ".jpg"),
+                { type: "image/jpeg" }
+              );
+              resolve(compressedFile);
+            },
+            "image/jpeg",
+            IMAGE_QUALITY
           );
-          resolve(compressedFile);
-        },
-        "image/jpeg",
-        IMAGE_QUALITY
-      );
+        })
+        .catch((err) => reject(err));
     };
     img.onerror = () => reject(new Error("Falha ao ler imagem"));
     img.src = URL.createObjectURL(file);
@@ -70,7 +121,11 @@ const compressImageToJpeg = async (file: File): Promise<File> => {
 
 const convertImageToPdf = async (file: File): Promise<File | null> => {
   try {
-    const source = file.size > SIZE_LIMIT_BYTES ? await compressImageToJpeg(file) : file;
+    const isJpeg = file.type === "image/jpeg" || file.type === "image/jpg";
+    const isPng = file.type === "image/png";
+    const needsRasterToJpeg = !(isJpeg || isPng);
+    const shouldCompressOrRasterize = needsRasterToJpeg || file.size > SIZE_LIMIT_BYTES;
+    const source = shouldCompressOrRasterize ? await compressImageToJpeg(file) : file;
     const pdfDoc = await PDFDocument.create();
     const imageBytes = await source.arrayBuffer();
 
@@ -172,13 +227,7 @@ export const handleDocumentUploadHelper = async <T extends string = string>({
       }
     }
 
-    const ultimoArquivo = arquivos[arquivos.length - 1];
-    const ultimoTipo = ultimoArquivo?.type || "";
-    if (ultimoTipo.startsWith("image/") || ultimoTipo === "application/pdf") {
-      setFileTypeError(false);
-    } else if (encontrouTipoInvalido) {
-      setFileTypeError(true);
-    }
+    setFileTypeError(encontrouTipoInvalido);
 
     setDocumentos((prev) => [...prev, ...novosDocumentos]);
     if (category && onCategorySet) {
