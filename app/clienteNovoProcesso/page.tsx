@@ -252,7 +252,7 @@ export default function ClienteNovoProcesso() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1A243F]">
+    <div className="min-h-screen flex flex-col">
       {loading && <Spinner />}
       <Header />
       <main className="flex-1 px-4 py-8 flex items-center justify-center">

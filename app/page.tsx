@@ -51,7 +51,7 @@ export default function Inicio() {
             animate={startTransition ? { y: -300, scale: 0.8, opacity: 0 } : {}}
             transition={{ duration: 1.2 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center flex-1 text-center px-4 backdrop-blur-sm bg-black/40"
+            className="flex flex-col items-center justify-center flex-1 text-center px-4 backdrop-blur-sm"
           >
             <motion.h1
               initial={{ y: 0 }}
