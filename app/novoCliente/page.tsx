@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../../src/components/Header";
 import Footer from "../../src/components/Footer";
-import { formatCpfCnpj, isValidCPF } from "../../src/utils/validation";
+
 import { useDispatch } from "react-redux";
 import { setDadosPF } from "../../store/clienteSlice";
 import Spinner from "../../src/components/Spinner";
@@ -28,10 +28,6 @@ export default function NovoCliente() {
 
   // Estados do formulário
   const [nome, setNome] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [cpfRaw, setCpfRaw] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [email, setEmail] = useState("");
 
   // Estados para documentos por categoria
   const [documentosIdentidade, setDocumentosIdentidade] = useState<DocumentoLocal[]>([]);
@@ -46,9 +42,6 @@ export default function NovoCliente() {
 
   // Controle de interação com campos
   const [nomeTouched, setNomeTouched] = useState(false);
-  const [cpfTouched, setCpfTouched] = useState(false);
-  const [telefoneTouched, setTelefoneTouched] = useState(false);
-  const [emailTouched, setEmailTouched] = useState(false);
   const [fileTypeError, setFileTypeError] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -58,32 +51,10 @@ export default function NovoCliente() {
   const effectiveStep = Math.min(currentStep, TOTAL_STEPS);
   const progressPercent = (effectiveStep / TOTAL_STEPS) * 100;
 
-  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const onlyDigits = value.replace(/\D/g, "");
-    setCpfRaw(onlyDigits);
-    setCpf(formatCpfCnpj(value));
-  };
 
-  const isValidDocument = () => {
-    return isValidCPF(cpfRaw);
-  };
-
-  const isValidTelefone = () => {
-    return telefone.replace(/\D/g, "").length >= 10;
-  };
-
-  const isValidEmail = () => {
-    return /\S+@\S+\.\S+/.test(email);
-  };
 
   const canAdvanceFromStep1 = () => {
-    return (
-      nome.trim().split(" ").length >= 2 &&
-      isValidDocument() &&
-      isValidTelefone() &&
-      isValidEmail()
-    );
+    return nome.trim().split(" ").length >= 2;
   };
 
   const handleDocumentUpload = async (
@@ -256,10 +227,6 @@ export default function NovoCliente() {
 
     const contratoFormData = new FormData();
     contratoFormData.append("cliente", nome);
-    // contratoFormData.append("nome", nome);
-    // contratoFormData.append("cpf", cpf);
-    // contratoFormData.append("telefone", telefone);
-    // contratoFormData.append("email", email);
 
     documentosContrato.forEach((doc) => {
       contratoFormData.append("arquivo", doc.file, doc.nomeAtribuido);
@@ -299,9 +266,6 @@ export default function NovoCliente() {
       dispatch(
         setDadosPF({
           nome,
-          cpf: cpfRaw,
-          telefone,
-          email,
         })
       );
       setCurrentStep(6);
@@ -378,106 +342,13 @@ export default function NovoCliente() {
                     </p>
                   )}
                 </div>
-
-                <div>
-                  <label
-                    htmlFor="cpf"
-                    className="block text-sm font-bold uppercase  mb-2"
-                  >
-                    CPF
-                  </label>
-                  <input
-                    type="text"
-                    id="cpf"
-                    placeholder="Digite o CPF"
-                    value={cpf}
-                    onChange={(e) => {
-                      handleCpfChange(e);
-                      if (isValidCPF(e.target.value.replace(/\D/g, ""))) setCpfTouched(true);
-                    }}
-                    onBlur={() => setCpfTouched(true)}
-                    maxLength={14}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
-                  />
-                  {cpfTouched && !isValidDocument() && (
-                    <p className="text-red-600 text-sm mt-1">CPF inválido</p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="telefone"
-                    className="block text-sm font-bold uppercase  mb-2"
-                  >
-                    Telefone
-                  </label>
-                  <input
-                    type="tel"
-                    id="telefone"
-                    placeholder="Digite o telefone"
-                    value={telefone}
-                    onChange={(e) => {
-                      setTelefone(e.target.value);
-                      if (e.target.value.replace(/\D/g, "").length >= 10) setTelefoneTouched(true);
-                    }}
-                    onBlur={() => setTelefoneTouched(true)}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
-                  />
-                  {telefoneTouched && !isValidTelefone() && (
-                    <p className="text-red-600 text-sm mt-1">Telefone inválido</p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-bold uppercase  mb-2"
-                  >
-                    E-mail
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    placeholder="Digite o e-mail"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (/\S+@\S+\.\S+/.test(e.target.value)) setEmailTouched(true);
-                    }}
-                    onBlur={() => setEmailTouched(true)}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
-                  />
-                  {emailTouched && !isValidEmail() && (
-                    <p className="text-red-600 text-sm mt-1">E-mail inválido</p>
-                  )}
-                </div>
               </div>
               <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setCurrentStep(2)}
-                  disabled={
-                    !(
-                      nomeTouched &&
-                      nome.trim().split(" ").length >= 2 &&
-                      cpfTouched &&
-                      isValidDocument() &&
-                      telefoneTouched &&
-                      isValidTelefone() &&
-                      emailTouched &&
-                      isValidEmail()
-                    )
-                  }
+                  disabled={!(nomeTouched && nome.trim().split(" ").length >= 2)}
                   className={`w-1/2 font-bold py-3 px-6 rounded-lg transition-all ${
-                    !(
-                      nomeTouched &&
-                      nome.trim().split(" ").length >= 2 &&
-                      cpfTouched &&
-                      isValidDocument() &&
-                      telefoneTouched &&
-                      isValidTelefone() &&
-                      emailTouched &&
-                      isValidEmail()
-                    )
+                    !(nomeTouched && nome.trim().split(" ").length >= 2)
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "bg-yellow text-[#1A243F] hover:bg-[#D4B91A]"
                   }`}
@@ -649,15 +520,7 @@ export default function NovoCliente() {
                 <p>
                   <strong>Nome:</strong> {nome}
                 </p>
-                <p>
-                  <strong>CPF:</strong> {cpf}
-                </p>
-                <p>
-                  <strong>Telefone:</strong> {telefone}
-                </p>
-                <p>
-                  <strong>Email:</strong> {email}
-                </p>
+
                 <p>
                   <strong>Documentos de Identidade:</strong> {documentosIdentidade.length} arquivo(s)
                 </p>
