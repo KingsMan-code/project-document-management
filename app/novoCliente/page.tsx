@@ -11,6 +11,7 @@ import Spinner from "../../src/components/Spinner";
 import {
   handleDocumentUploadHelper,
   UploadDocumentoLocal,
+  formatFileSize,
 } from "../../src/utils/upload";
 
 type DocumentoLocal = UploadDocumentoLocal;
@@ -216,7 +217,10 @@ export default function NovoCliente() {
                 </div>
               ) : (
                 <>
-                  <span className="flex-1">{doc.nomeAtribuido}</span>
+                  <span className="flex-1">
+                    {doc.nomeAtribuido}
+                    <span className="ml-2 text-xs text-gray-500">{formatFileSize(doc.file.size)}</span>
+                  </span>
                   <div className="flex gap-2">
                     <button
                       onClick={() => abrirEdicao(idx, doc.nomeAtribuido, categoria)}

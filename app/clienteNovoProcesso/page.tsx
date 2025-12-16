@@ -11,6 +11,7 @@ import { setDadosPF } from "../../store/clienteSlice";
 import {
   handleDocumentUploadHelper,
   UploadDocumentoLocal,
+  formatFileSize,
 } from "../../src/utils/upload";
 
 type DocumentoLocal = UploadDocumentoLocal;
@@ -221,7 +222,10 @@ export default function ClienteNovoProcesso() {
               </div>
             ) : (
               <>
-                <span className="flex-1">{doc.nomeAtribuido}</span>
+                <span className="flex-1">
+                  {doc.nomeAtribuido}
+                  <span className="ml-2 text-xs text-gray-500">{formatFileSize(doc.file.size)}</span>
+                </span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => abrirEdicao(idx, doc.nomeAtribuido, categoria)}

@@ -6,24 +6,78 @@ export interface UploadDocumentoLocal {
   nomeAtribuido: string;
 }
 
-interface HandleUploadParams {
+interface HandleUploadParams<T extends string = string> {
   event: React.ChangeEvent<HTMLInputElement>;
   setDocumentos: React.Dispatch<React.SetStateAction<UploadDocumentoLocal[]>>;
   setFileTypeError: (value: boolean) => void;
   setLoading?: (value: boolean) => void;
-  category?: string;
-  onCategorySet?: (category: string) => void;
+  category?: T;
+  onCategorySet?: (category: T) => void;
 }
+
+const SIZE_LIMIT_BYTES = 4 * 1024 * 1024; // 4MB
+const MAX_IMAGE_DIMENSION = 1800; // px
+const IMAGE_QUALITY = 0.72;
+
+export const formatFileSize = (bytes: number) => {
+  if (!bytes && bytes !== 0) return "-";
+  const units = ["B", "KB", "MB", "GB"] as const;
+  let size = bytes;
+  let unitIndex = 0;
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  }
+  return `${size.toFixed(size >= 10 ? 0 : 1)} ${units[unitIndex]}`;
+};
+
+const compressImageToJpeg = async (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const maxSide = Math.max(img.width, img.height);
+      const scale = maxSide > MAX_IMAGE_DIMENSION ? MAX_IMAGE_DIMENSION / maxSide : 1;
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("Canvas context inválido"));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Falha ao comprimir imagem"));
+            return;
+          }
+          const compressedFile = new File(
+            [blob],
+            file.name.replace(/\.[^.]+$/, ".jpg"),
+            { type: "image/jpeg" }
+          );
+          resolve(compressedFile);
+        },
+        "image/jpeg",
+        IMAGE_QUALITY
+      );
+    };
+    img.onerror = () => reject(new Error("Falha ao ler imagem"));
+    img.src = URL.createObjectURL(file);
+  });
+};
 
 const convertImageToPdf = async (file: File): Promise<File | null> => {
   try {
+    const source = file.size > SIZE_LIMIT_BYTES ? await compressImageToJpeg(file) : file;
     const pdfDoc = await PDFDocument.create();
-    const imageBytes = await file.arrayBuffer();
+    const imageBytes = await source.arrayBuffer();
 
     let embeddedImage;
-    if (file.type === "image/jpeg" || file.type === "image/jpg") {
+    if (source.type === "image/jpeg" || source.type === "image/jpg") {
       embeddedImage = await pdfDoc.embedJpg(imageBytes);
-    } else if (file.type === "image/png") {
+    } else if (source.type === "image/png") {
       embeddedImage = await pdfDoc.embedPng(imageBytes);
     } else {
       return null;
@@ -43,9 +97,15 @@ const convertImageToPdf = async (file: File): Promise<File | null> => {
       pdfBytes.byteOffset + pdfBytes.byteLength
     ) as ArrayBuffer;
     const pdfBlob = new Blob([arrayBuffer], { type: "application/pdf" });
-    const newFile = new File([pdfBlob], file.name.replace(/\.[^.]+$/, ".pdf"), {
+    const newFile = new File([pdfBlob], source.name.replace(/\.[^.]+$/, ".pdf"), {
       type: "application/pdf",
     });
+
+    console.log(
+      `[upload] imagem ${file.name} => antes: ${formatFileSize(file.size)} | depois: ${formatFileSize(
+        newFile.size
+      )}`
+    );
 
     return newFile;
   } catch (err) {
@@ -54,14 +114,40 @@ const convertImageToPdf = async (file: File): Promise<File | null> => {
   }
 };
 
-export const handleDocumentUploadHelper = async ({
+const compressPdfIfNeeded = async (file: File): Promise<File> => {
+  if (file.size <= SIZE_LIMIT_BYTES) return file;
+  try {
+    const pdfBytes = await file.arrayBuffer();
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const newDoc = await PDFDocument.create();
+    const pages = await newDoc.copyPages(pdfDoc, pdfDoc.getPageIndices());
+    pages.forEach((p) => newDoc.addPage(p));
+    const newBytes = await newDoc.save();
+    const arrayBuffer = newBytes.buffer.slice(
+      newBytes.byteOffset,
+      newBytes.byteOffset + newBytes.byteLength
+    ) as ArrayBuffer;
+    const compressed = new File([arrayBuffer], file.name, { type: "application/pdf" });
+    console.log(
+      `[upload] pdf ${file.name} => antes: ${formatFileSize(file.size)} | depois: ${formatFileSize(
+        compressed.size
+      )}`
+    );
+    return compressed;
+  } catch (err) {
+    console.warn("Compressão de PDF falhou, usando arquivo original", err);
+    return file;
+  }
+};
+
+export const handleDocumentUploadHelper = async <T extends string = string>({
   event,
   setDocumentos,
   setFileTypeError,
   setLoading,
   category,
   onCategorySet,
-}: HandleUploadParams) => {
+}: HandleUploadParams<T>) => {
   if (!event.target.files) return;
 
   setLoading?.(true);
@@ -79,7 +165,8 @@ export const handleDocumentUploadHelper = async ({
           novosDocumentos.push({ file: pdfConvertido, nomeAtribuido: pdfConvertido.name });
         }
       } else if (tipo === "application/pdf") {
-        novosDocumentos.push({ file, nomeAtribuido: file.name });
+        const maybeCompressed = await compressPdfIfNeeded(file);
+        novosDocumentos.push({ file: maybeCompressed, nomeAtribuido: file.name });
       } else {
         encontrouTipoInvalido = true;
       }
