@@ -260,10 +260,10 @@ export default function ClienteNovoProcesso() {
           {currentStep === 1 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Dados Pessoais</h1>
-              <p className="text-center text-[#CA9D14] mb-8">Informe seus dados para prosseguir</p>
+              <p className="text-center  mb-8">Informe seus dados para prosseguir</p>
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="nome" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
+                  <label htmlFor="nome" className="block text-sm font-bold uppercase  mb-2">
                     Nome Completo
                   </label>
                   <input
@@ -284,7 +284,7 @@ export default function ClienteNovoProcesso() {
                 </div>
 
                 <div>
-                  <label htmlFor="cpfCnpj" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
+                  <label htmlFor="cpfCnpj" className="block text-sm font-bold uppercase  mb-2">
                     CPF
                   </label>
                   <input
@@ -304,7 +304,7 @@ export default function ClienteNovoProcesso() {
                 </div>
 
                 <div>
-                  <label htmlFor="telefone" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
+                  <label htmlFor="telefone" className="block text-sm font-bold uppercase  mb-2">
                     Telefone
                   </label>
                   <input
@@ -323,7 +323,7 @@ export default function ClienteNovoProcesso() {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-bold uppercase text-[#CA9D14] mb-2">
+                  <label htmlFor="email" className="block text-sm font-bold uppercase  mb-2">
                     E-mail
                   </label>
                   <input
@@ -360,7 +360,7 @@ export default function ClienteNovoProcesso() {
           {currentStep === 2 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Documentos</h1>
-              <p className="text-center text-[#CA9D14] mb-8">Envie os documentos do processo</p>
+              <p className="text-center  mb-8">Envie os documentos do processo</p>
 
               {fileTypeError && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -411,7 +411,7 @@ export default function ClienteNovoProcesso() {
           {currentStep === 3 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Contrato</h1>
-              <p className="text-center text-[#CA9D14] mb-8">Envie o contrato referente ao processo</p>
+              <p className="text-center  mb-8">Envie o contrato referente ao processo</p>
 
               {fileTypeError && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -462,7 +462,7 @@ export default function ClienteNovoProcesso() {
           {currentStep === 4 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6">Obrigado!</h1>
-              <p className="text-center text-[#CA9D14] mb-8">Seus dados foram registrados com sucesso.</p>
+              <p className="text-center  mb-8">Seus dados foram registrados com sucesso.</p>
               <div className="bg-gray-50 p-4 rounded-lg mb-6">
                 <h4 className="font-bold mb-2">Resumo dos dados:</h4>
                 <p>
@@ -498,7 +498,7 @@ export default function ClienteNovoProcesso() {
           {currentStep === 5 && (
             <>
               <h1 className="text-3xl font-bold text-center mb-6 text-red-600">Serviço indisponível</h1>
-              <p className="text-center text-[#CA9D14] mb-8">Contate o escritório informando o erro abaixo.</p>
+              <p className="text-center  mb-8">Contate o escritório informando o erro abaixo.</p>
               {errorMessage && <p className="text-center text-red-600 mb-8">{errorMessage}</p>}
               <div className="flex justify-center">
                 <button
