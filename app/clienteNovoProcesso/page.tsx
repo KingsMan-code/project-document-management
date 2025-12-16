@@ -3,17 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { PDFDocument } from "pdf-lib";
 import Header from "../../src/components/Header";
 import Footer from "../../src/components/Footer";
 import Spinner from "../../src/components/Spinner";
 import { formatCpfCnpj, isValidCPF } from "../../src/utils/validation";
 import { setDadosPF } from "../../store/clienteSlice";
+import {
+  handleDocumentUploadHelper,
+  UploadDocumentoLocal,
+} from "../../src/utils/upload";
 
-interface DocumentoLocal {
-  file: File;
-  nomeAtribuido: string;
-}
+type DocumentoLocal = UploadDocumentoLocal;
 
 export default function ClienteNovoProcesso() {
   const router = useRouter();
@@ -61,88 +61,19 @@ export default function ClienteNovoProcesso() {
   const isValidTelefone = () => telefone.replace(/\D/g, "").length >= 10;
   const isValidEmail = () => /\S+@\S+\.\S+/.test(email);
 
-  const converterImagemParaPDF = async (file: File): Promise<File | null> => {
-    try {
-      const pdfDoc = await PDFDocument.create();
-      const imageBytes = await file.arrayBuffer();
-
-      let embeddedImage;
-      if (file.type === "image/jpeg" || file.type === "image/jpg") {
-        embeddedImage = await pdfDoc.embedJpg(imageBytes);
-      } else if (file.type === "image/png") {
-        embeddedImage = await pdfDoc.embedPng(imageBytes);
-      } else {
-        return null;
-      }
-
-      const page = pdfDoc.addPage([embeddedImage.width, embeddedImage.height]);
-      page.drawImage(embeddedImage, {
-        x: 0,
-        y: 0,
-        width: embeddedImage.width,
-        height: embeddedImage.height,
-      });
-
-      const pdfBytes = await pdfDoc.save();
-      const arrayBuffer = pdfBytes.buffer.slice(
-        pdfBytes.byteOffset,
-        pdfBytes.byteOffset + pdfBytes.byteLength
-      ) as ArrayBuffer;
-      const pdfBlob = new Blob([arrayBuffer], { type: "application/pdf" });
-      const newFile = new File(
-        [pdfBlob],
-        file.name.replace(/\.[^.]+$/, ".pdf"),
-        { type: "application/pdf" }
-      );
-
-      return newFile;
-    } catch (err) {
-      console.error("Erro ao converter imagem em PDF:", err);
-      return null;
-    }
-  };
-
   const handleDocumentUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     setDocumentos: React.Dispatch<React.SetStateAction<DocumentoLocal[]>>,
     categoria: "geral" | "contrato"
   ) => {
-    if (!e.target.files) return;
-    const novosArquivos = Array.from(e.target.files);
-    const novosDocumentosLocais: DocumentoLocal[] = [];
-    let encontrouTipoInvalido = false;
-
-    for (const file of novosArquivos) {
-      const tipo = file.type;
-
-      if (tipo.startsWith("image/")) {
-        const pdfConvertido = await converterImagemParaPDF(file);
-        if (pdfConvertido) {
-          novosDocumentosLocais.push({
-            file: pdfConvertido,
-            nomeAtribuido: pdfConvertido.name,
-          });
-        }
-      } else if (tipo === "application/pdf") {
-        novosDocumentosLocais.push({
-          file,
-          nomeAtribuido: file.name,
-        });
-      } else {
-        encontrouTipoInvalido = true;
-      }
-    }
-
-    const ultimoArquivo = novosArquivos[novosArquivos.length - 1];
-    const ultimoTipo = ultimoArquivo?.type || "";
-    if (ultimoTipo.startsWith("image/") || ultimoTipo === "application/pdf") {
-      setFileTypeError(false);
-    } else if (encontrouTipoInvalido) {
-      setFileTypeError(true);
-    }
-
-    setDocumentos((prev) => [...prev, ...novosDocumentosLocais]);
-    setEditandoCategoria(categoria);
+    await handleDocumentUploadHelper({
+      event: e,
+      setDocumentos,
+      setFileTypeError,
+      setLoading,
+      category: categoria,
+      onCategorySet: setEditandoCategoria,
+    });
   };
 
   const handleRemoveFile = (

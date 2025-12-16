@@ -7,13 +7,13 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setDadosPF } from "../../store/clienteSlice";
 import { formatCpfCnpj, isValidCPF } from "../../src/utils/validation";
-import { PDFDocument } from "pdf-lib";
 import Spinner from "../../src/components/Spinner";
+import {
+  handleDocumentUploadHelper,
+  UploadDocumentoLocal,
+} from "../../src/utils/upload";
 
-interface DocumentoLocal {
-  arquivo: File;
-  nomeAtribuido: string;
-}
+type DocumentoLocal = UploadDocumentoLocal;
 
 export default function Cliente() {
   const router = useRouter();
@@ -93,14 +93,14 @@ export default function Cliente() {
       cpf: cpfCnpjRaw,
       documentos: documentosLocais.map((doc) => ({
         nome: doc.nomeAtribuido,
-        arquivo: doc.arquivo,
+        file: doc.file,
       })),
     };
 
     const formdata = new FormData();
     formdata.append("cliente", nome);
     for (const doc of clienteComDocumentos.documentos) {
-      formdata.append("arquivos", doc.arquivo, doc.nome);
+      formdata.append("arquivos", doc.file, doc.nome);
     }
 
     setLoading(true);
@@ -132,82 +132,13 @@ export default function Cliente() {
     }
   };
 
-  const handleDocumentUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (!e.target.files) return;
-    const novosArquivos = Array.from(e.target.files);
-    const novosDocumentosLocais: DocumentoLocal[] = [];
-    let encontrouTipoInvalido = false;
-
-    for (const file of novosArquivos) {
-      const tipo = file.type;
-
-      if (tipo.startsWith("image/")) {
-        try {
-          const pdfDoc = await PDFDocument.create();
-          const imageBytes = await file.arrayBuffer();
-
-          let embeddedImage;
-          if (tipo === "image/jpeg" || tipo === "image/jpg") {
-            embeddedImage = await pdfDoc.embedJpg(imageBytes);
-          } else if (tipo === "image/png") {
-            embeddedImage = await pdfDoc.embedPng(imageBytes);
-          } else {
-            // Não mostra o alerta para formatos de imagem não suportados
-            continue;
-          }
-
-          const page = pdfDoc.addPage([
-            embeddedImage.width,
-            embeddedImage.height,
-          ]);
-          page.drawImage(embeddedImage, {
-            x: 0,
-            y: 0,
-            width: embeddedImage.width,
-            height: embeddedImage.height,
-          });
-
-          const pdfBytes = await pdfDoc.save();
-          const pdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
-          const newFile = new File(
-            [pdfBlob],
-            file.name.replace(/\.[^.]+$/, ".pdf"),
-            {
-              type: "application/pdf",
-            }
-          );
-
-          novosDocumentosLocais.push({
-            arquivo: newFile,
-            nomeAtribuido: newFile.name,
-          });
-        } catch (err) {
-          console.error("Erro ao converter imagem em PDF:", err);
-        }
-      } else if (tipo === "application/pdf") {
-        novosDocumentosLocais.push({
-          arquivo: file,
-          nomeAtribuido: file.name,
-        });
-      } else {
-        encontrouTipoInvalido = true;
-        // Se o último arquivo for inválido, mostra o alerta
-        // Se houver arquivos válidos depois, o alerta será removido abaixo
-      }
-    }
-
-    // Se o último arquivo enviado for válido, some o alerta
-    const ultimoArquivo = novosArquivos[novosArquivos.length - 1];
-    const ultimoTipo = ultimoArquivo?.type || "";
-    if (ultimoTipo.startsWith("image/") || ultimoTipo === "application/pdf") {
-      setFileTypeError(false);
-    } else if (encontrouTipoInvalido) {
-      setFileTypeError(true);
-    }
-
-    setDocumentosLocais((prev) => [...prev, ...novosDocumentosLocais]);
+  const handleDocumentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await handleDocumentUploadHelper({
+      event: e,
+      setDocumentos: setDocumentosLocais,
+      setFileTypeError,
+      setLoading,
+    });
   };
 
   return (
@@ -452,7 +383,7 @@ export default function Cliente() {
                                 ✎
                               </button>
                               <a
-                                href={URL.createObjectURL(doc.arquivo)}
+                                href={URL.createObjectURL(doc.file)}
                                 download={doc.nomeAtribuido}
                                 className="text-green-600 hover:text-green-800"
                               >

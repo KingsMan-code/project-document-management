@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { PDFDocument } from "pdf-lib";
 import { useRouter } from "next/navigation";
 import Header from "../../src/components/Header";
 import Footer from "../../src/components/Footer";
@@ -9,11 +8,12 @@ import { formatCpfCnpj, isValidCPF } from "../../src/utils/validation";
 import { useDispatch } from "react-redux";
 import { setDadosPF } from "../../store/clienteSlice";
 import Spinner from "../../src/components/Spinner";
+import {
+  handleDocumentUploadHelper,
+  UploadDocumentoLocal,
+} from "../../src/utils/upload";
 
-interface DocumentoLocal {
-  arquivo: File;
-  nomeAtribuido: string;
-}
+type DocumentoLocal = UploadDocumentoLocal;
 
 export default function NovoCliente() {
   const router = useRouter();
@@ -85,88 +85,18 @@ export default function NovoCliente() {
     );
   };
 
-  const converterImagemParaPDF = async (arquivo: File): Promise<File | null> => {
-    try {
-      const pdfDoc = await PDFDocument.create();
-      const imageBytes = await arquivo.arrayBuffer();
-
-      let embeddedImage;
-      if (arquivo.type === "image/jpeg" || arquivo.type === "image/jpg") {
-        embeddedImage = await pdfDoc.embedJpg(imageBytes);
-      } else if (arquivo.type === "image/png") {
-        embeddedImage = await pdfDoc.embedPng(imageBytes);
-      } else {
-        return null;
-      }
-
-      const page = pdfDoc.addPage([embeddedImage.width, embeddedImage.height]);
-      page.drawImage(embeddedImage, {
-        x: 0,
-        y: 0,
-        width: embeddedImage.width,
-        height: embeddedImage.height,
-      });
-
-      const pdfBytes = await pdfDoc.save();
-      const arrayBuffer = pdfBytes.buffer.slice(
-        pdfBytes.byteOffset,
-        pdfBytes.byteOffset + pdfBytes.byteLength
-      ) as ArrayBuffer;
-      const pdfBlob = new Blob([arrayBuffer], { type: "application/pdf" });
-      const newFile = new File(
-        [pdfBlob],
-        arquivo.name.replace(/\.[^.]+$/, ".pdf"),
-        { type: "application/pdf" }
-      );
-
-      return newFile;
-    } catch (err) {
-      console.error("Erro ao converter imagem em PDF:", err);
-      return null;
-    }
-  };
-
   const handleDocumentUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
     setDocumentos: React.Dispatch<React.SetStateAction<DocumentoLocal[]>>,
     categoria: string
   ) => {
-    if (!e.target.files) return;
-    const novosArquivos = Array.from(e.target.files);
-    const novosDocumentosLocais: DocumentoLocal[] = [];
-    let encontrouTipoInvalido = false;
-
-    for (const file of novosArquivos) {
-      const tipo = file.type;
-
-      if (tipo.startsWith("image/")) {
-        const pdfConvertido = await converterImagemParaPDF(file);
-        if (pdfConvertido) {
-          novosDocumentosLocais.push({
-            arquivo: pdfConvertido,
-            nomeAtribuido: pdfConvertido.name,
-          });
-        }
-      } else if (tipo === "application/pdf") {
-        novosDocumentosLocais.push({
-          arquivo: file,
-          nomeAtribuido: file.name,
-        });
-      } else {
-        encontrouTipoInvalido = true;
-      }
-    }
-
-    // Se o último arquivo enviado for válido, some o alerta
-    const ultimoArquivo = novosArquivos[novosArquivos.length - 1];
-    const ultimoTipo = ultimoArquivo?.type || "";
-    if (ultimoTipo.startsWith("image/") || ultimoTipo === "application/pdf") {
-      setFileTypeError(false);
-    } else if (encontrouTipoInvalido) {
-      setFileTypeError(true);
-    }
-
-    setDocumentos((prev) => [...prev, ...novosDocumentosLocais]);
+    await handleDocumentUploadHelper({
+      event: e,
+      setDocumentos,
+      setFileTypeError,
+      setLoading,
+      category: categoria,
+    });
   };
 
   const handleRemoveFile = (
@@ -295,7 +225,7 @@ export default function NovoCliente() {
                       ✎
                     </button>
                     <a
-                      href={URL.createObjectURL(doc.arquivo)}
+                      href={URL.createObjectURL(doc.file)}
                       download={doc.nomeAtribuido}
                       className="text-green-600 hover:text-green-800"
                     >
@@ -328,7 +258,7 @@ export default function NovoCliente() {
     // contratoFormData.append("email", email);
 
     documentosContrato.forEach((doc) => {
-      contratoFormData.append("arquivo", doc.arquivo, doc.nomeAtribuido);
+      contratoFormData.append("arquivo", doc.file, doc.nomeAtribuido);
     });
 
     const endpoint = CONTRATO_API_URL || (API_URL ? `${API_URL}/upload/documents/contract` : null);
@@ -354,7 +284,7 @@ export default function NovoCliente() {
 
     [...documentosIdentidade, ...documentosResidencia, ...documentosProcuracao].forEach(
       (doc) => {
-        formdata.append("arquivos", doc.arquivo, doc.nomeAtribuido);
+        formdata.append("arquivos", doc.file, doc.nomeAtribuido);
       }
     );
 
