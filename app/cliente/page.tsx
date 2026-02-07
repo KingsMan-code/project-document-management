@@ -6,7 +6,7 @@ import Footer from "../../src/components/Footer";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setDadosPF } from "../../store/clienteSlice";
-import { formatCpfCnpj, isValidCPF } from "../../src/utils/validation";
+
 import Spinner from "../../src/components/Spinner";
 import {
   handleDocumentUploadHelper,
@@ -27,10 +27,6 @@ export default function Cliente() {
 
   // Estados do formulário
   const [nome, setNome] = useState("");
-  const [cpfCnpj, setCpfCnpj] = useState("");
-  const [cpfCnpjRaw, setCpfCnpjRaw] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [email, setEmail] = useState("");
   const [documentosLocais, setDocumentosLocais] = useState<DocumentoLocal[]>(
     []
   );
@@ -44,29 +40,9 @@ export default function Cliente() {
 
   // Controle de interação com campos
   const [nomeTouched, setNomeTouched] = useState(false);
-  const [cpfTouched, setCpfTouched] = useState(false);
-  const [telefoneTouched, setTelefoneTouched] = useState(false);
-  const [emailTouched, setEmailTouched] = useState(false);
   const [fileTypeError, setFileTypeError] = useState(false);
 
-  const handleCpfCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const onlyDigits = value.replace(/\D/g, "");
-    setCpfCnpjRaw(onlyDigits);
-    setCpfCnpj(formatCpfCnpj(value));
-  };
 
-  const isValidDocument = () => {
-    return isValidCPF(cpfCnpjRaw);
-  };
-
-  const isValidTelefone = () => {
-    return telefone.replace(/\D/g, "").length >= 10;
-  };
-
-  const isValidEmail = () => {
-    return /\S+@\S+\.\S+/.test(email);
-  };
 
   const handleRemoveFile = (index: number) => {
     setDocumentosLocais((prev) => prev.filter((_, idx) => idx !== index));
@@ -90,7 +66,6 @@ export default function Cliente() {
   const handleFinalSubmit = async () => {
     const clienteComDocumentos = {
       nome: nome,
-      cpf: cpfCnpjRaw,
       documentos: documentosLocais.map((doc) => ({
         nome: doc.nomeAtribuido,
         file: doc.file,
@@ -112,9 +87,6 @@ export default function Cliente() {
       dispatch(
         setDadosPF({
           nome,
-          cpf: cpfCnpjRaw,
-          telefone,
-          email,
         })
       );
       setCurrentStep(4);
@@ -183,109 +155,13 @@ export default function Cliente() {
                     </p>
                   )}
                 </div>
-
-                <div>
-                  <label
-                    htmlFor="cpfCnpj"
-                    className="block text-sm font-bold uppercase  mb-2"
-                  >
-                    CPF
-                  </label>
-                  <input
-                    type="text"
-                    id="cpfCnpj"
-                    placeholder="Digite o CPF"
-                    value={cpfCnpj}
-                    onChange={(e) => {
-                      handleCpfCnpjChange(e);
-                      if (isValidCPF(e.target.value.replace(/\D/g, "")))
-                        setCpfTouched(true);
-                    }}
-                    onBlur={() => setCpfTouched(true)}
-                    maxLength={14}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
-                  />
-                  {cpfTouched && !isValidDocument() && (
-                    <p className="text-red-600 text-sm mt-1">CPF inválido</p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="telefone"
-                    className="block text-sm font-bold uppercase  mb-2"
-                  >
-                    Telefone
-                  </label>
-                  <input
-                    type="tel"
-                    id="telefone"
-                    placeholder="Digite o telefone"
-                    value={telefone}
-                    onChange={(e) => {
-                      setTelefone(e.target.value);
-                      if (e.target.value.replace(/\D/g, "").length >= 10)
-                        setTelefoneTouched(true);
-                    }}
-                    onBlur={() => setTelefoneTouched(true)}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
-                  />
-                  {telefoneTouched && !isValidTelefone() && (
-                    <p className="text-red-600 text-sm mt-1">Telefone inválido</p>
-                  )}
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-bold uppercase  mb-2"
-                  >
-                    E-mail
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    placeholder="Digite o e-mail"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (/\S+@\S+\.\S+/.test(e.target.value))
-                        setEmailTouched(true);
-                    }}
-                    onBlur={() => setEmailTouched(true)}
-                    className="w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#ECC440] transition-all"
-                  />
-                  {emailTouched && !isValidEmail() && (
-                    <p className="text-red-600 text-sm mt-1">E-mail inválido</p>
-                  )}
-                </div>
               </div>
               <div className="flex justify-center mt-6">
                 <button
                   onClick={() => setCurrentStep(3)}
-                  disabled={
-                    !(
-                      nomeTouched &&
-                      nome.trim().split(" ").length >= 2 &&
-                      cpfTouched &&
-                      isValidDocument() &&
-                      telefoneTouched &&
-                      isValidTelefone() &&
-                      emailTouched &&
-                      isValidEmail()
-                    )
-                  }
+                  disabled={!(nomeTouched && nome.trim().split(" ").length >= 2)}
                   className={`w-1/2 font-bold py-3 px-6 rounded-lg transition-all ${
-                    !(
-                      nomeTouched &&
-                      nome.trim().split(" ").length >= 2 &&
-                      cpfTouched &&
-                      isValidDocument() &&
-                      telefoneTouched &&
-                      isValidTelefone() &&
-                      emailTouched &&
-                      isValidEmail()
-                    )
+                    !(nomeTouched && nome.trim().split(" ").length >= 2)
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "bg-yellow text-[#1A243F] hover:bg-[#D4B91A]"
                   }`}
@@ -440,15 +316,7 @@ export default function Cliente() {
                 <p>
                   <strong>Nome:</strong> {nome}
                 </p>
-                <p>
-                  <strong>CPF:</strong> {cpfCnpj}
-                </p>
-                <p>
-                  <strong>Telefone:</strong> {telefone}
-                </p>
-                <p>
-                  <strong>Email:</strong> {email}
-                </p>
+
                 <p>
                   <strong>Documentos:</strong> {documentosLocais.length}{" "}
                   arquivo(s)
