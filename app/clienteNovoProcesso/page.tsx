@@ -237,8 +237,8 @@ export default function ClienteNovoProcesso() {
     <div className="min-h-screen flex flex-col">
       {loading && <Spinner />}
       <Header />
-      <main className="flex-1 px-3 py-6 flex items-center justify-center">
-        <div className="bg-white text-[#1A243F] rounded-2xl shadow-xl p-8 max-w-lg w-full relative border-l-4 border-[#ECC440]">
+      <main className="flex-1 px-2 py-5 flex items-center justify-center">
+        <div className="bg-white text-[#1A243F] rounded-2xl shadow-xl p-6 max-w-md w-full relative border-l-2 border-[#ECC440]">
           {currentStep === 1 && (
             <>
               <h1 className="text-2xl font-bold text-center mb-5">Dados Pessoais</h1>

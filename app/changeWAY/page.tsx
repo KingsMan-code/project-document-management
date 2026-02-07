@@ -47,17 +47,17 @@ export default function ChangeWAY() {
           setLoading(true);
           router.push(card.redirect);
         }}
-        className="flex flex-col h-full relative bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.9] hover:scale-100 hover:shadow-2xl cursor-pointer"
+        className="flex flex-col h-full relative bg-white rounded-2xl overflow-hidden shadow-xl transform transition-all duration-300 scale-[0.95] hover:scale-100 hover:shadow-2xl cursor-pointer"
         style={{
           background: 'linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)',
-          width: '340px',
-          height: '340px',
+          width: '300px',
+          height: '300px',
           margin: '0 auto',
         }}
       >
         <div className="relative overflow-hidden">
           <img
-            className={`w-full h-48 object-cover transition-all duration-700 ${
+            className={`w-full h-40 object-cover transition-all duration-700 ${
               isHovered ? 'grayscale-0' : 'grayscale'
             }`}
             src={card.image}
@@ -65,9 +65,9 @@ export default function ChangeWAY() {
           />
         </div>
 
-        <div className="flex flex-col flex-1 p-6">
-          <div className="font-semibold text-lg mb-2 text-primary text-center">{card.title}</div>
-          <p className="text-textColor text-sm leading-relaxed mb-2 text-center">{card.description}</p>
+        <div className="flex flex-col flex-1 p-5">
+          <div className="font-semibold text-base mb-1 text-primary text-center">{card.title}</div>
+          <p className="text-textColor text-xs leading-relaxed text-center">{card.description}</p>
         </div>
       </div>
     );
@@ -77,13 +77,13 @@ export default function ChangeWAY() {
     <div className="min-h-screen flex flex-col">
       {loading && <Spinner />}
       <Header />
-      <main className="flex-1 px-4 py-6 flex items-center justify-center">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold text-white mb-1">Juris Portal Solução em gestão de documentos</h1>
+      <main className="flex-1 px-3 py-4 flex items-center justify-center">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-6">
+            <h1 className="text-xl font-semibold text-white mb-1">Juris Portal Solução em gestão de documentos</h1>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-center max-w-3xl mx-auto items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 justify-center max-w-2xl mx-auto items-center">
             {cards.map((card) => (
               <div key={card.id} className="flex justify-center items-center">
                 <CardComponent card={card} />
@@ -91,7 +91,7 @@ export default function ChangeWAY() {
             ))}
           </div>
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-6">
             <button
               onClick={() => router.back()}
               className="bg-primary hover:bg-primary/80 text-white font-bold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg"
