@@ -362,10 +362,10 @@ export default function NovoCliente() {
           {/* STEP 2 - DOCUMENTOS DE IDENTIDADE */}
           {currentStep === 2 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6">
+              <h1 className="text-2xl font-bold text-center mb-5">
                 Documentos de Identidade
               </h1>
-              <p className="text-center  mb-8">
+              <p className="text-center  mb-6">
                 Envie seus documentos de identidade
               </p>
               
@@ -401,10 +401,10 @@ export default function NovoCliente() {
           {/* STEP 3 - DOCUMENTOS DE RESIDÊNCIA */}
           {currentStep === 3 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6">
+              <h1 className="text-2xl font-bold text-center mb-5">
                 Comprovante de Residência
               </h1>
-              <p className="text-center  mb-8">
+              <p className="text-center  mb-6">
                 Envie seu comprovante de residência
               </p>
               
@@ -440,10 +440,10 @@ export default function NovoCliente() {
           {/* STEP 4 - PROCURAÇÃO */}
           {currentStep === 4 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6">
+              <h1 className="text-2xl font-bold text-center mb-5">
                 Procuração
               </h1>
-              <p className="text-center  mb-8">
+              <p className="text-center  mb-6">
                 Envie sua procuração (opcional)
               </p>
               

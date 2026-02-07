@@ -175,10 +175,10 @@ export default function Cliente() {
           {/* SEÇÃO 3 */}
           {currentStep === 3 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6">
+              <h1 className="text-2xl font-bold text-center mb-5">
                 Documentos
               </h1>
-              <p className="text-center  mb-8">
+              <p className="text-center  mb-6">
                 Envie seus documentos (opcional)
               </p>
 
@@ -338,7 +338,7 @@ export default function Cliente() {
               <h1 className="text-2xl font-bold text-center mb-5 text-red-600">
                 Serviço indisponível
               </h1>
-              <p className="text-center  mb-8">
+              <p className="text-center  mb-6">
                 Contate o escritório informando o erro abaixo.
               </p>
               {errorMessage && (
