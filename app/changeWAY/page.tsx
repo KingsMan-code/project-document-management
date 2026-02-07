@@ -80,7 +80,7 @@ export default function ChangeWAY() {
       <main className="flex-1 px-4 py-6 flex items-center justify-center">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold text-white mb-1">JurisPortal. Solução em gestão de documentos.</h1>
+            <h1 className="text-2xl font-semibold text-white mb-1">Juris Portal Solução em gestão de documentos</h1>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 justify-center max-w-3xl mx-auto items-center">
