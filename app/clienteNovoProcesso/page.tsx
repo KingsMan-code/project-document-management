@@ -259,12 +259,12 @@ export default function ClienteNovoProcesso() {
     <div className="min-h-screen flex flex-col">
       {loading && <Spinner />}
       <Header />
-      <main className="flex-1 px-4 py-8 flex items-center justify-center">
-        <div className="bg-white text-[#1A243F] rounded-2xl shadow-lg p-10 max-w-xl w-full relative border-l-8 border-[#ECC440]">
+      <main className="flex-1 px-3 py-6 flex items-center justify-center">
+        <div className="bg-white text-[#1A243F] rounded-2xl shadow-xl p-8 max-w-lg w-full relative border-l-4 border-[#ECC440]">
           {currentStep === 1 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6">Dados Pessoais</h1>
-              <p className="text-center  mb-8">Informe seus dados para prosseguir</p>
+              <h1 className="text-2xl font-bold text-center mb-5">Dados Pessoais</h1>
+              <p className="text-center  mb-6">Informe seus dados para prosseguir</p>
               <div className="space-y-6">
                 <div>
                   <label htmlFor="nome" className="block text-sm font-bold uppercase  mb-2">
@@ -363,8 +363,8 @@ export default function ClienteNovoProcesso() {
 
           {currentStep === 2 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6">Documentos</h1>
-              <p className="text-center  mb-8">Envie os documentos do processo</p>
+              <h1 className="text-2xl font-bold text-center mb-5">Documentos</h1>
+              <p className="text-center  mb-6">Envie os documentos do processo</p>
 
               {fileTypeError && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -414,8 +414,8 @@ export default function ClienteNovoProcesso() {
 
           {currentStep === 3 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6">Contrato</h1>
-              <p className="text-center  mb-8">Envie o contrato referente ao processo</p>
+              <h1 className="text-2xl font-bold text-center mb-5">Contrato</h1>
+              <p className="text-center  mb-6">Envie o contrato referente ao processo</p>
 
               {fileTypeError && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -465,8 +465,8 @@ export default function ClienteNovoProcesso() {
 
           {currentStep === 4 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6">Obrigado!</h1>
-              <p className="text-center  mb-8">Seus dados foram registrados com sucesso.</p>
+              <h1 className="text-2xl font-bold text-center mb-5">Obrigado!</h1>
+              <p className="text-center  mb-6">Seus dados foram registrados com sucesso.</p>
               <div className="bg-gray-50 p-4 rounded-lg mb-6">
                 <h4 className="font-bold mb-2">Resumo dos dados:</h4>
                 <p>
@@ -501,8 +501,8 @@ export default function ClienteNovoProcesso() {
 
           {currentStep === 5 && (
             <>
-              <h1 className="text-3xl font-bold text-center mb-6 text-red-600">Serviço indisponível</h1>
-              <p className="text-center  mb-8">Contate o escritório informando o erro abaixo.</p>
+              <h1 className="text-2xl font-bold text-center mb-5 text-red-600">Serviço indisponível</h1>
+              <p className="text-center  mb-6">Contate o escritório informando o erro abaixo.</p>
               {errorMessage && <p className="text-center text-red-600 mb-8">{errorMessage}</p>}
               <div className="flex justify-center">
                 <button
